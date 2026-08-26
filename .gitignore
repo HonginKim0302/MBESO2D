@@ -1,0 +1,41 @@
+# MATLAB autosave and backup files
+*.asv
+*.m~
+*.bak
+*.mlx.bak
+*.autosave
+
+# MATLAB generated data and figures
+*.mat
+*.fig
+
+# Generated outputs
+results/*
+!results/.gitkeep
+!results/README.md
+
+# Local validation evidence and external-solver working files
+validation/private/
+validation/raw/
+*.odb
+*.sim
+*.lck
+
+# Unreferenced manuscript-editing screenshots
+docs/image/algorithm_overview/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor and IDE folders
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.log
+
+# Local release archives
+*.zip

@@ -1,0 +1,14 @@
+* text=auto
+
+*.m text eol=lf
+*.md text eol=lf
+*.csv text eol=lf
+*.cff text eol=lf
+*.json text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+VERSION text eol=lf
+LICENSE text eol=lf
+LICENSE-NOTICE text eol=lf
+
+*.png binary

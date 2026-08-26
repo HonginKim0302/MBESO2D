@@ -1,0 +1,27 @@
+MBESO2D licensing notice
+
+Copyright (C) 2026 MBESO2D contributors
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+MBESO2D is free software: you can redistribute it and/or modify it under the
+terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
+
+MBESO2D is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+The complete GNU General Public License version 3 text is provided in the
+`LICENSE` file and is available at <https://www.gnu.org/licenses/gpl-3.0.html>.
+
+Portions of the compact finite-element implementation were adapted from
+`BESO79.m` in the MIT-licensed NewBESO repository. Those portions retain the
+upstream MIT copyright and permission notice. `THIRD_PARTY_NOTICE.md` records
+the exact source revision, adapted locations, scientific references, and the
+complete preserved MIT notice.
+
+The project-level GPL license governs distribution of MBESO2D as a combined
+work. It does not remove or replace the MIT permissions and notice applicable
+to the identified upstream portions.

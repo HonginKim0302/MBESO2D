@@ -1,0 +1,59 @@
+% SPDX-License-Identifier: GPL-3.0-or-later
+% Copyright (C) 2026 MBESO2D contributors
+function run_smoke_tests()
+%RUN_SMOKE_TESTS Run short solver contract and safety-stop tests.
+
+repo_root = fileparts(fileparts(mfilename('fullpath')));
+addpath(fullfile(repo_root, 'src'));
+
+compact_options = struct( ...
+    'bc_case', 'cantilever', 'bc_load', 100, ...
+    'max_iterations', 3, 'force_iteration_limit', true, ...
+    'verbose', false, 'plotting', false, 'write_run_report', false, ...
+    'structure_width', 200, 'structure_height', 120, ...
+    'structure_dimension_unit', 'mm', ...
+    'out_of_plane_thickness_m', 1e-3, 'r1_mm', 20, 'r2_mm', 30);
+compact = mbeso(20, 12, 0.8, 0.05, compact_options);
+assert(isequal(size(compact.x), [12, 20]));
+assert(compact.iterations == 3);
+assert(strcmp(compact.termination_reason, 'fixed_iteration_limit'));
+assert(all(isfinite(compact.response.U)));
+
+fixed_mask = false(10, 20);
+fixed_mask(end, :) = true;
+fixed_options = struct( ...
+    'bc_case', 'run_case_3a', ...
+    'deck_line_load_N_per_m', 100, ...
+    'deck_load_distribution', 'equal_nodes', ...
+    'deck_load_node_row', 10, ...
+    'max_iterations', 2, 'verbose', false, 'plotting', false, ...
+    'write_run_report', false, 'save_result', false, ...
+    'structure_width', 20, 'structure_height', 10, ...
+    'structure_dimension_unit', 'm', ...
+    'out_of_plane_thickness_m', 1, ...
+    'fixed_solid_mask', fixed_mask, 'r1_mm', 1000, 'r2_mm', 1500);
+fixed = mbeso_fixed_solid(20, 10, 0.8, 0.05, fixed_options);
+assert(isequal(size(fixed.x), [10, 20]));
+assert(fixed.iterations == 2);
+assert(~fixed.converged);
+assert(strcmp(fixed.termination_reason, 'max_iterations'));
+assert(all(isfinite(fixed.response.U)));
+
+analysis_options = fixed_options;
+analysis_options.analysis_only = true;
+analysis_options.initial_x = fixed.x;
+analysis_options.initial_mi_map = fixed.mi_map;
+analysis_options.layout_source = 'smoke-test optimized layout';
+fixed_analysis = mbeso_fixed_solid(20, 10, 0.8, 0.05, analysis_options);
+assert(fixed_analysis.iterations == 0);
+assert(fixed_analysis.analysis_completed);
+assert(strcmp(fixed_analysis.termination_reason, ...
+    'fixed_layout_fem_evaluation_completed'));
+assert(isequal(fixed_analysis.x, fixed.x));
+assert(isequal(fixed_analysis.mi_map, fixed.mi_map));
+assert(abs(fixed_analysis.compliance - fixed.compliance) <= ...
+    1e-12 * max(1, abs(fixed.compliance)));
+assert(all(isfinite(fixed_analysis.response.U)));
+
+fprintf('MBESO2D smoke tests passed.\n');
+end

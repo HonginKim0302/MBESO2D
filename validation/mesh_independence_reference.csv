@@ -1,0 +1,4 @@
+nelx,nely,fixed_iteration,compliance_N_mm,runtime_s,tension_fraction_percent,compression_fraction_percent,vm_max_full_MPa,vm_max_excluding_40mm_MPa,source
+50,30,214,645.1,5.15,8.27,31.73,85.61,70.69,manuscript_table_5
+100,60,214,574.8,18.01,9.15,30.85,128.91,74.36,manuscript_table_5
+200,120,214,566.1,72.79,9.24,30.76,261.36,72.65,manuscript_table_5

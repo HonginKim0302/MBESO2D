@@ -1,0 +1,3 @@
+example,physical_case,thickness_m,iterations,tension_fraction_percent,compliance_kN_mm,vm_max_full_MPa,tension_eta_full_percent,compression_eta_full_percent,source
+run_case_3a,lower_retained_deck,1,95,7.3594,2.5521538262e6,136.992486294,21.5961831046,-273.984972589,final_manuscript_table_6_and_release_regression
+run_case_3b,upper_retained_deck,1,93,9.0547,1.67515621616e6,137.414342729,54.9657370918,-70.8937628516,final_manuscript_table_6_and_release_regression

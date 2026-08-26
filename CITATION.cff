@@ -1,0 +1,100 @@
+cff-version: 1.2.0
+message: "If you use MBESO2D in your research, please cite this software release and the associated methodology references."
+title: "MBESO2D: An Open MATLAB Implementation of Two-Dimensional Multi-Material BESO"
+version: "1.0.0"
+license: "GPL-3.0-or-later"
+authors:
+  - given-names: "Hongin"
+    family-names: "Kim"
+    affiliation: "Department of Civil, Environmental and Architectural Engineering, Korea University, Seoul 02841, Korea"
+    email: "kimhongin13@korea.ac.kr"
+  - given-names: "Jaehee"
+    family-names: "Choi"
+    affiliation: "Department of Civil, Environmental and Architectural Engineering, Korea University, Seoul 02841, Korea"
+  - given-names: "Minsoo"
+    family-names: "Sung"
+    affiliation: "Department of Civil and Environmental Engineering, Ohio University, Athens, OH, USA"
+    email: "msung@ohio.edu"
+  - given-names: "Donghyuk"
+    family-names: "Jung"
+    affiliation: "School of Civil, Environmental and Architectural Engineering, Korea University, Seoul 02841, Korea"
+    email: "jungd@korea.ac.kr"
+repository-code: "https://github.com/HonginKim0302/MBESO2D"
+url: "https://github.com/HonginKim0302/MBESO2D"
+abstract: "MBESO2D is an open MATLAB implementation of stress-based multi-material bi-directional evolutionary structural optimization for two-dimensional benchmark, retained-solid, and non-design-domain problems."
+keywords:
+  - "topology optimization"
+  - "BESO"
+  - "MBESO"
+  - "multi-material topology optimization"
+  - "stress-based optimization"
+  - "MATLAB"
+  - "finite element analysis"
+references:
+  - type: article
+    authors:
+      - given-names: "Yu"
+        family-names: "Li"
+      - given-names: "Yi Min"
+        family-names: "Xie"
+    title: "Evolutionary topology optimization for structures made of multiple materials with different properties in tension and compression"
+    journal: "Composite Structures"
+    volume: "259"
+    year: 2021
+    doi: "10.1016/j.compstruct.2020.113497"
+  - type: book
+    authors:
+      - given-names: "Xiaodong"
+        family-names: "Huang"
+      - given-names: "Yi Min"
+        family-names: "Xie"
+    title: "Evolutionary Topology Optimization of Continuum Structures: Methods and Applications"
+    publisher:
+      name: "Wiley"
+    year: 2010
+    doi: "10.1002/9780470689486"
+  - type: software
+    authors:
+      - given-names: "Zicheng"
+        family-names: "Zhuang"
+      - given-names: "Yi Min"
+        family-names: "Xie"
+    title: "NewBESO"
+    url: "https://github.com/zhuanginhongkong/NewBESO"
+  - type: article
+    authors:
+      - given-names: "Ole"
+        family-names: "Sigmund"
+    title: "A 99 line topology optimization code written in Matlab"
+    journal: "Structural and Multidisciplinary Optimization"
+    volume: "21"
+    year: 2001
+    doi: "10.1007/s001580050176"
+  - type: article
+    authors:
+      - given-names: "Erik"
+        family-names: "Andreassen"
+      - given-names: "Anders"
+        family-names: "Clausen"
+      - given-names: "Mattias"
+        family-names: "Schevenels"
+      - given-names: "Boyan S."
+        family-names: "Lazarov"
+      - given-names: "Ole"
+        family-names: "Sigmund"
+    title: "Efficient topology optimization in MATLAB using 88 lines of code"
+    journal: "Structural and Multidisciplinary Optimization"
+    volume: "43"
+    year: 2011
+    doi: "10.1007/s00158-010-0594-7"
+  - type: article
+    authors:
+      - given-names: "Federico"
+        family-names: "Ferrari"
+      - given-names: "Ole"
+        family-names: "Sigmund"
+    title: "A new generation 99 line Matlab code for compliance topology optimization and its extension to 3D"
+    journal: "Structural and Multidisciplinary Optimization"
+    volume: "62"
+    year: 2020
+    doi: "10.1007/s00158-020-02629-w"

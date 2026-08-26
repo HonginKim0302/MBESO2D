@@ -1,0 +1,4 @@
+example,matlab_release,nelx,nely,iterations,compliance_N_mm,solid_ratio,m1_elements,m2_elements,vm_max_full_MPa,tension_eta_full_percent,compression_eta_full_percent,converged,verification_status
+run_cantilever,R2024b,100,60,214,574.783605811,0.4,549,1851,128.907505162,51.5630020649,-66.6670090434,true,verified_final_manuscript_2026_08_25
+run_case_3a,R2024b,320,80,95,2552153826.2,0.4,1884,8356,136.992486294,21.5961831046,-273.984972589,true,verified_case_3a_lower_deck_1m_2026_08_25
+run_case_3b,R2024b,320,80,93,1675156216.16,0.4,2318,7922,137.414342729,54.9657370918,-70.8937628516,true,verified_case_3b_upper_deck_1m_2026_08_25
