@@ -3,11 +3,11 @@
 [![Version: 1.0.0](https://img.shields.io/badge/version-1.0.0-blue.svg)](#status)
 [![MATLAB: tested R2024b](https://img.shields.io/badge/MATLAB-tested%20R2024b-orange.svg)](#requirements)
 
-`MBESO2D` is a MATLAB implementation for stress-based multi-material bi-directional evolutionary structural optimization (MBESO). The code targets two-dimensional continuum topology optimization problems with two solid materials and void, where material assignment is updated from stress-state indicators and element utilization.
+`MBESO2D` is a MATLAB implementation for stress-state-based multi-material bi-directional evolutionary structural optimization (MBESO). The code targets two-dimensional continuum topology optimization problems with two solid materials and void, where material assignment is updated from stress-state indicators and element utilization.
 
 This repository accompanies the manuscript:
 
-> MBESO2D: An Open MATLAB Implementation of Two-Dimensional Multi-Material BESO
+> MBESO2D: An open MATLAB implementation of stress-state-based multi-material BESO
 
 The implementation is organized for a reproducible SoftwareX-style release: compact MATLAB solvers are kept in `src/`, manuscript examples in `examples/`, plotting/report utilities in `visualization/`, and documentation in `docs/`.
 

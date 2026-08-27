@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use MBESO2D in your research, please cite this software release and the associated methodology references."
-title: "MBESO2D: An Open MATLAB Implementation of Two-Dimensional Multi-Material BESO"
+title: "MBESO2D: An open MATLAB implementation of stress-state-based multi-material BESO"
 version: "1.0.0"
 license: "GPL-3.0-or-later"
 authors:
@@ -21,7 +21,7 @@ authors:
     email: "jungd@korea.ac.kr"
 repository-code: "https://github.com/HonginKim0302/MBESO2D"
 url: "https://github.com/HonginKim0302/MBESO2D"
-abstract: "MBESO2D is an open MATLAB implementation of stress-based multi-material bi-directional evolutionary structural optimization for two-dimensional benchmark, retained-solid, and non-design-domain problems."
+abstract: "MBESO2D is an open MATLAB implementation of stress-state-based multi-material bi-directional evolutionary structural optimization for two-dimensional benchmark, retained-solid, and non-design-domain problems."
 keywords:
   - "topology optimization"
   - "BESO"

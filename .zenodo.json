@@ -1,9 +1,9 @@
 {
-  "title": "MBESO2D: An Open MATLAB Implementation of Two-Dimensional Multi-Material BESO",
+  "title": "MBESO2D: An open MATLAB implementation of stress-state-based multi-material BESO",
   "version": "1.0.0",
   "upload_type": "software",
   "language": "eng",
-  "description": "A reproducible MATLAB implementation of stress-based two-dimensional multi-material bi-directional evolutionary structural optimization, including retained-solid regions, line loads, self-weight, validation scripts, and benchmark examples.",
+  "description": "A reproducible MATLAB implementation of stress-state-based multi-material bi-directional evolutionary structural optimization for two-dimensional problems, including retained-solid regions, line loads, self-weight, validation scripts, and benchmark examples.",
   "creators": [
     {
       "name": "Kim, Hongin",
