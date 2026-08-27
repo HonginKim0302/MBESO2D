@@ -42,11 +42,9 @@ The implementation is organized for a reproducible SoftwareX-style release: comp
 ## Authors
 
 - Hongin Kim, Department of Civil, Environmental and Architectural Engineering, Korea University, Seoul 02841, Korea
-- Jaehee Choi, Department of Civil, Environmental and Architectural Engineering, Korea University, Seoul 02841, Korea
-- Minsoo Sung, Department of Civil and Environmental Engineering, Ohio University, Athens, OH, USA
 - Donghyuk Jung, School of Civil, Environmental and Architectural Engineering, Korea University, Seoul 02841, Korea
 
-Corresponding authors: Minsoo Sung (`msung@ohio.edu`) and Donghyuk Jung (`jungd@korea.ac.kr`).
+Corresponding author: Donghyuk Jung (`jungd@korea.ac.kr`).
 
 Public contact: `kimhongin13@korea.ac.kr`; `jungd@korea.ac.kr`.
 
