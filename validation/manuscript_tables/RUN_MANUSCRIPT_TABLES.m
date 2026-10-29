@@ -1,11 +1,11 @@
 % SPDX-License-Identifier: GPL-3.0-or-later
 % Copyright (C) 2026 MBESO2D contributors
-function [table8, table10] = RUN_MANUSCRIPT_TABLES(output_dir, fresh_runs_dir)
-%RUN_MANUSCRIPT_TABLES Recompute Tables 8 and 10 from actual endpoint FE fields.
+function [table8, table9] = RUN_MANUSCRIPT_TABLES(output_dir, fresh_runs_dir)
+%RUN_MANUSCRIPT_TABLES Reconstruct Tables 8 and 9 from the supplied evidence.
 % Default: use the compact, archived final states bundled in data/.
 % Optional fresh_runs_dir: directory containing runs/<run_id>/result.mat,
-% or the runs directory itself. Run baselines and sensitivity there first.
-% For the three added deadbands, a recorded full_history.mat in the same
+% or the runs directory itself. Run the 17-case sensitivity suite there first.
+% For the three larger deadbands, a recorded full_history.mat in the same
 % fresh root is also accepted; its first_stop state is used, not common state 214.
 % No solver is called here. Utilization uses the assigned material strength.
 here=fileparts(mfilename('fullpath'));repo=fileparts(fileparts(here));
@@ -15,7 +15,11 @@ if ~isfolder(output_dir),mkdir(output_dir);end
 saved=load(fullfile(here,'data','tables_input.mat'),'cases');
 if iscell(saved.cases),cases=[saved.cases{:}];else,cases=saved.cases;end
 meta=readtable(fullfile(here,'data','sensitivity_archived.csv'),'TextType','string');
-refs=readtable(fullfile(here,'data','reference_compliance.csv'),'TextType','string');
+assert(height(meta)==17 && numel(unique(meta.run_id))==17,'Expected 17 sensitivity cases.');
+cases=cases(ismember(string({cases.run_id}),meta.run_id));
+assert(numel(cases)==17,'Missing sensitivity endpoint fields.');
+table8=readtable(fullfile(repo,'validation','abaqus_crosscheck.csv'),'TextType','string');
+assert(height(table8)==8,'Expected eight reported Abaqus comparison rows.');
 using_archive=isempty(fresh_runs_dir);
 input_sources=struct('run_id',{},'relative_file',{},'sha256',{},'input_kind',{},'state',{});
 if ~using_archive
@@ -32,7 +36,7 @@ if ~using_archive
             if is_added_deadband(cases(k).run_id)
                 assert(isfield(r,'convergence_iteration') && ...
                     r.iterations==r.convergence_iteration, ...
-                    'Table 10 requires the first response stop, not a continuation endpoint: %s',input);
+                    'Table 9 requires the first analysis termination, not a continuation endpoint: %s',input);
             end
             cases(k).C_Nmm=r.compliance;cases(k).iterations=r.iterations;
             cases(k).termination_reason=r.termination_reason;cases(k).converged=r.converged;
@@ -55,15 +59,6 @@ if ~using_archive
             'sha256',sha256_file(input),'input_kind',kind,'state',double(cases(k).iterations));
     end
 end
-% One fixed response under two reporting conventions, not two optimizations.
-rows=cell(height(refs),8);
-for k=1:height(refs)
-    r=get_case(cases,refs.run_id(k));scale=refs.Nmm_per_display_unit(k);ref=refs.reference_C_Nmm(k);
-    rows(k,:)={refs.case_label(k),refs.display_unit(k),ref/scale,r.C_Nmm/scale, ...
-        2*r.C_Nmm/scale,100*(r.C_Nmm/ref-1),100*(2*r.C_Nmm/ref-1),refs.reference_definition_status(k)};
-end
-table8=cell2table(rows,'VariableNames',{'case_label','unit','reference_C','C_half_FtU','twice_C_FtU', ...
-    'difference_C_percent','difference_twice_C_percent','reference_interpretation'});
 baseline=get_case(cases,'cantilever');rows=cell(height(meta),12);
 for k=1:height(meta)
     r=get_case(cases,meta.run_id(k));solid=r.x>r.xmin;
@@ -86,40 +81,46 @@ for k=1:height(meta)
     rows(k,:)={string(r.run_id),meta.factor_group(k),meta.changed_option(k),r.C_Nmm,delta,vm,u1,u2, ...
         r.iterations,reason,logical(r.converged),period2};
 end
-table10=cell2table(rows,'VariableNames',{'run_id','factor_group','setting','C_Nmm','C_change_percent', ...
+table9=cell2table(rows,'VariableNames',{'run_id','factor_group','setting','C_Nmm','C_change_percent', ...
     'max_centroidal_VM_MPa','M1_max_utilization_percent','M2_max_utilization_percent', ...
     'iterations','termination_reason','response_criterion_satisfied','last20_two_cycle_archived'});
-write_csv17(fullfile(output_dir,'Table8_compliance_conventions.csv'),table8);
-write_csv17(fullfile(output_dir,'Table10_one_factor_sensitivity.csv'),table10);
-save(fullfile(output_dir,'manuscript_tables.mat'),'table8','table10');
-fid=fopen(fullfile(output_dir,'Table8.md'),'w','n','UTF-8');g=onCleanup(@()fclose(fid));
-fprintf(fid,'| Case | Unit | Reference C | C = 0.5 F''U | 2C | Difference C (%%) | Difference 2C (%%) |\n|---|---|---:|---:|---:|---:|---:|\n');
+table9.M2_signed_utilization_percent=-table9.M2_max_utilization_percent;
+write_csv17(fullfile(output_dir,'Table08_Abaqus_comparison.csv'),table8);
+write_csv17(fullfile(output_dir,'Table09_one_factor_sensitivity.csv'),table9);
+save(fullfile(output_dir,'manuscript_tables.mat'),'table8','table9');
+fid=fopen(fullfile(output_dir,'Table08.md'),'w','n','UTF-8');g=onCleanup(@()fclose(fid));
+fprintf(fid,'# Table 8. Reported fixed-layout FE comparison\n\n');
+fprintf(fid,'Rounded manuscript values are reproduced as supplied. The reported <0.01%% bound is not recalculated from rounded numbers. Abaqus jobs are not included.\n\n');
+fprintf(fid,'| Benchmark | Response | MBESO2D | Abaqus | Unit | Reported difference |\n|---|---|---:|---:|---|---|\n');
 for k=1:height(table8)
-    fprintf(fid,'| %s | %s | %.8g | %.8g | %.8g | %+.2f | %+.2f |\n',table8.case_label(k),table8.unit(k), ...
-        table8.reference_C(k),table8.C_half_FtU(k),table8.twice_C_FtU(k),table8.difference_C_percent(k),table8.difference_twice_C_percent(k));
+    fprintf(fid,'| %s | %s | %.8g | %.8g | %s | %s |\n',table8.benchmark(k),table8.response(k), ...
+        table8.mbeso2d_value(k),table8.abaqus_value(k),table8.unit(k),table8.reported_relative_difference(k));
 end
-fprintf(fid,'\nThe reference compliance definition is unconfirmed; bridge units are interpreted as N m. This is a conditional convention comparison.\n');clear g;
-fid=fopen(fullfile(output_dir,'Table10.md'),'w','n','UTF-8');g=onCleanup(@()fclose(fid));
-fprintf(fid,'| Setting | Delta C (%%) | Maximum VM (MPa) | M1 maximum (%%) | M2 maximum (%%) | Updates | End |\n|---|---:|---:|---:|---:|---:|---|\n');
-for k=1:height(table10)
-    fprintf(fid,'| %s | %+.2f | %.2f | %.2f | %.2f | %d | %s |\n',table10.setting(k),table10.C_change_percent(k), ...
-        table10.max_centroidal_VM_MPa(k),table10.M1_max_utilization_percent(k),table10.M2_max_utilization_percent(k), ...
-        table10.iterations(k),table10.termination_reason(k));
+clear g;
+fid=fopen(fullfile(output_dir,'Table09.md'),'w','n','UTF-8');g=onCleanup(@()fclose(fid));
+fprintf(fid,'# Table 9. One-factor endpoint sensitivity\n\n');
+fprintf(fid,'Each condition uses its own analysis-termination criterion or iteration cap. All stresses are centroidal and evaluated over all solid elements. Assigned-material utilization uses M1 = 250 MPa and M2 = 50 MPa; the M2 maximum magnitude is shown with a minus sign.\n\n');
+fprintf(fid,'| Setting | C change (%%) | Peak VM (MPa) | M1 (%%) | Signed M2 (%%) | Iterations | Termination |\n|---|---:|---:|---:|---:|---:|---|\n');
+for k=1:height(table9)
+    fprintf(fid,'| %s | %+.2f | %.2f | %.2f | %.2f | %d | %s |\n',table9.setting(k), ...
+        table9.C_change_percent(k),table9.max_centroidal_VM_MPa(k), ...
+        table9.M1_max_utilization_percent(k),table9.M2_signed_utilization_percent(k), ...
+        table9.iterations(k),table9.termination_reason(k));
 end
-fprintf(fid,'\nEach row uses its own stopping/cap endpoint. All stresses are centroidal and over the full solid domain. Utilization is nonnegative within each assigned-material subset; no 40 mm exclusion is used.\n');clear g;
+clear g;
 status=struct('passed',true,'used_archived_fields',using_archive,'cases',numel(cases), ...
-    'table8_rows',height(table8),'table10_rows',height(table10),'new_FE_executed',false, ...
+    'table8_rows',height(table8),'table9_rows',height(table9),'new_FE_executed',false, ...
     'utilization_definition','100 VM / assigned strength: M1=250 MPa, M2=50 MPa', ...
-    'reference_convention_confirmed',false,'input_mat_sha256',sha256_file(fullfile(here,'data','tables_input.mat')));
+    'table8_origin','Supplied rounded Abaqus comparison; no new Abaqus run','input_mat_sha256',sha256_file(fullfile(here,'data','tables_input.mat')));
 status.input_mat_role='Bundled field archive and required run-ID list';
 if ~using_archive
     status.input_mat_role='Run-ID list only; numerical fields read from fresh files';
 end
 status.fresh_input_sources=input_sources;
-status.table10_endpoint_definition='Each variant uses its first analysis-termination criterion or iteration cap; added deadbands use first_stop, not common iteration 214.';
+status.table9_endpoint_definition='Each variant uses its first analysis-termination criterion or iteration cap; larger deadbands use first_stop, not common iteration 214.';
 fid=fopen(fullfile(output_dir,'table_generation_status.json'),'w');g=onCleanup(@()fclose(fid));
 fprintf(fid,'%s\n',jsonencode(status,'PrettyPrint',true));
-disp(table8);disp(table10);fprintf('Tables saved to %s\n',output_dir);
+disp(table8);disp(table9);fprintf('Tables saved to %s\n',output_dir);
 end
 function yes=is_added_deadband(id)
 yes=any(strcmp(id,{'cantilever_eps_0p05','cantilever_eps_0p5','cantilever_eps_5'}));
@@ -127,7 +128,7 @@ end
 function r=from_first_stop_history(r,input)
 loaded=load(input,'data');d=loaded.data;k=double(d.first_stop);
 assert(isfinite(k)&&k>=1&&k==floor(k)&&k<=d.n_updates, ...
-    'A recorded first response stop is required: %s',input);
+    'A recorded first analysis termination is required: %s',input);
 assert(strcmp(d.run_id,r.run_id),'Unexpected history run ID: %s',input);
 shape=[d.cfg.nely,d.cfg.nelx];
 assert(size(d.phase,1)==prod(shape)&&size(d.phase,2)>=k+1);

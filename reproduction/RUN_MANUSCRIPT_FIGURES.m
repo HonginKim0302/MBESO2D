@@ -1,6 +1,5 @@
-% Reproduce the numerical graphs of submitted Figures 6 and 7 (29 October 2026).
-% Reads stored experimental data; no FE analysis or optimization is rerun.
-showWindows=true;
+% Open the numerical panels of manuscript Figures 6 and 7.
+% Edit individual panels in figure_06 or figure_07; outputs are stored locally.
 reproductionRoot=fileparts(mfilename('fullpath'));
 addpath(reproductionRoot);
-reproduce_manuscript_figures(showWindows);
+reproduce_manuscript_figures(true);

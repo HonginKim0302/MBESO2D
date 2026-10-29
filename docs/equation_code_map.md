@@ -1,10 +1,7 @@
 # Manuscript equation-to-code correspondence
 
-This corresponds to Table 3 of the submitted revision checked on 2026-10-29.
-The table retains the equation/function/range mapping recorded on 2026-10-20;
-teaching comments and source ranges remain those of the 2026-10-14 annotated
-snapshot. Ranges refer to `src/mbeso.m`.
-Function and variable names provide anchors when line numbers change.
+Table 3 relates the baseline calculations to `src/mbeso.m`. Function and
+variable names provide anchors in addition to the source line ranges.
 
 | Calculation and equation | Function or code variable | Source lines |
 | --- | --- | --- |
@@ -17,13 +14,8 @@ Function and variable names provide anchors when line numbers change.
 
 Source SHA-256: `a267e9fa910989556375611d7e7c387bcac5425faf880cd540ff0ecc35a45336`
 
-The source hash identifies the annotated solver snapshot used for this manuscript.
-The FE, optimization-update and termination calculations are unchanged from
-the original public implementation; comments and material-display code are updated.
-The source references are snapshot-specific; update these ranges if the file
-is edited again. The correspondence describes the baseline public solver.
-Declared review variants and their instrumentation are documented separately.
-
-Two routine names were made explicit here: `element_energy` is already inside
-the FE/energy range, and `prepare_filter` is already inside the filter range.
-These are clarifications of the original Table 3, not algorithm changes.
+The hash identifies the source snapshot to which these ranges apply.
+The corresponding machine-readable map is [equation_code_map.csv](equation_code_map.csv).
+If the source is edited, verify both the ranges and the hash before using
+them in a manuscript. Experimental variants and their instrumentation are
+documented in `validation/experiments/`.

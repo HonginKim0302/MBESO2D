@@ -1,5 +1,0 @@
-artifact,kind,panel,fig,png,pdf,canvas_width_mm,canvas_height_mm
-"Figure3_deadband","combined","b,c,e; common horizon 0 to 214","figures/Figure3_deadband.fig","figures/Figure3_deadband.png","figures/Figure3_deadband.pdf",154.90000000000001,175.40000000000001
-"Figure3b","standalone","b","panels/Figure3b.fig","panels/Figure3b.png","panels/Figure3b.pdf",75.865573770491807,59.326254826254825
-"Figure3c","standalone","c","panels/Figure3c.fig","panels/Figure3c.png","panels/Figure3c.pdf",75.865573770491807,59.326254826254825
-"Figure3e","standalone","e","panels/Figure3e.fig","panels/Figure3e.png","panels/Figure3e.pdf",75.865573770491807,59.326254826254825

@@ -122,7 +122,7 @@ The following options are available in `mbeso_fixed_solid`:
 
 | Option | Default | Description |
 | --- | --- | --- |
-| `deck_line_load_N_per_m` | `[]` | Nonnegative line-load magnitude `q` in N/m. When empty, the legacy `bc_load` value is applied at every deck node. |
+| `deck_line_load_N_per_m` | `[]` | Nonnegative line-load magnitude `q` in N/m. When empty, the `bc_load` value is applied at every deck node. |
 | `deck_load_sign` | `1` | Algebraic sign applied to the deck load. The public examples use the solver's positive vertical direction for downward loading. |
 | `deck_load_distribution` | `'consistent'` | `'consistent'` or `'equal_nodes'`; used only when `deck_line_load_N_per_m` is specified. |
 | `deck_load_node_row` | case-specific | One-based node-row index on which the deck load is applied. |

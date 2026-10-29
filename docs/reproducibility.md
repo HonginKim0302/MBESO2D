@@ -1,22 +1,95 @@
-# Reproducibility Notes
+# Reproducibility
 
-This document summarizes the recommended reproduction workflow for `MBESO2D` version `1.0.0`.
+## Environment and setup
 
-## Setup
+Open MATLAB in the repository root and run `setup_mbeso_path`. The code uses
+base MATLAB. Verification has been performed in MATLAB R2024b Update 7 on
+Windows 64-bit. The core solvers are expected to support R2019b or later;
+this is not a claim that the complete figure and experiment workflows have
+been executed in every supported release. Native R2023a execution has not
+been verified.
 
-Open MATLAB in the repository root:
+Record the Git commit, MATLAB version, operating system, processor, RAM and
+run time with computational results. `VERSION` identifies the formal release;
+the exact commit identifies the source used for a particular calculation.
+
+## Numerical records and fresh calculations
+
+The repository supports two distinct operations:
+
+1. **Reproduction from supplied records.** The commands below create editable
+   figures and tables without rerunning optimization.
+2. **Fresh calculation.** The verification experiments produce FE histories
+   and endpoints that can be passed to the same figure and table workflows.
 
 ```matlab
-setup_mbeso_path
+run('reproduction/RUN_MANUSCRIPT_FIGURES.m')
+addpath(fullfile(pwd, 'validation', 'manuscript_tables'))
+[table8, table9] = RUN_MANUSCRIPT_TABLES;
 ```
 
-The repository uses base MATLAB only. It has been tested with MATLAB R2024b
-Update 7 on Windows 64-bit. MATLAB R2019b or later is expected to be compatible
-with the plotting utilities, but older releases have not been regression-tested.
+See [manuscript_reproduction.md](manuscript_reproduction.md) for panel scripts,
+output formats, iteration definitions and the distinction between numerical
+graphs and manually composed figure artwork. The compact input records are
+stored beside the figure scripts and in `validation/manuscript_tables/`.
+Generated output belongs in `results/` or `reproduction/outputs/`, not among
+the source records.
 
-## Example Runs
+## Verification experiments
 
-Run individual examples:
+```matlab
+addpath(fullfile(pwd, 'validation', 'experiments'))
+run_verification_experiments('smoke');
+```
+
+`run_verification_experiments(mode, outputRoot)` accepts an explicit output
+folder. The F5 entry point `validation/experiments/RUN_VERIFICATION.m` runs
+the smoke checks; `RUN_DEADBAND_SWEEP.m` runs the endpoint deadband sweep.
+
+| Mode | Work performed |
+| --- | --- |
+| `smoke` | Small execution and verification checks |
+| `regression` | Public-solver and instrumented-solver comparison over the first 20 updates |
+| `baselines` | Cantilever and both bridge baselines |
+| `sensitivity` | Cantilever baseline and sixteen one-factor conditions |
+| `deadband_sweep` | Baseline and the 0.05, 0.5 and 5 MPa deadband endpoints |
+| `initial10` | First-ten-update element records and independent update replay |
+| `histories` | Five deadband paths through the 214-update figure window and required first-termination states |
+| `bridge_energy` | Baselines and independent-Q4 energy/stress checks |
+| `all` | Three baselines, sixteen variants, fixed-layout audits and manuscript history studies |
+
+The baseline solver entry points remain in `src/`. Experimental alternatives
+and their instrumentation are confined to `validation/experiments/` so that
+their settings and numerical scope are explicit. Full-mesh calculations take
+substantially longer than plotting or smoke checks; full element histories
+can require gigabytes of disk space.
+
+To calculate and plot a complete study from the repository root:
+
+```matlab
+repoRoot = pwd;
+freshRoot = fullfile(repoRoot, 'results', 'verification');
+addpath(fullfile(repoRoot, 'validation', 'experiments'))
+run_verification_experiments('all', freshRoot);
+
+addpath(fullfile(repoRoot, 'reproduction'))
+bundle = prepare_manuscript_figures(freshRoot);
+run(fullfile(bundle, 'RUN_MANUSCRIPT_FIGURES.m'))
+
+addpath(fullfile(repoRoot, 'validation', 'manuscript_tables'))
+[table8, table9] = RUN_MANUSCRIPT_TABLES( ...
+    fullfile(freshRoot, 'tables'), freshRoot);
+```
+
+The figure preparation requires the cantilever initial-ten-update record and
+the five complete deadband histories at 0, 0.005, 0.05, 0.5 and 5 MPa. It
+derives fractions and transitions from those records and fails if required
+fresh records are missing. Fresh Table 9 requires the seventeen cantilever
+endpoints; the three extended deadband endpoints may also be read from their
+first-termination history records. Bridge inputs are not required to prepare
+Figures 6-7 or Table 9. Table 8 remains the documentary Abaqus comparison.
+
+## Example conditions
 
 ```matlab
 run('examples/run_cantilever.m')
@@ -24,253 +97,77 @@ run('examples/run_case_3a.m')
 run('examples/run_case_3b.m')
 ```
 
-The bridge-like fixed-solid examples are large and can take substantial time to run.
+The example scripts specify the following conditions explicitly.
 
-## Regenerate the submitted manuscript figures and tables
-
-From the repository root:
-
-```matlab
-run('reproduction/RUN_MANUSCRIPT_FIGURES.m')
-addpath(fullfile(pwd, 'validation', 'manuscript_tables'))
-RUN_SUBMISSION_TABLES;
-```
-
-These entry points use supplied records for Figures 6 and 7 and Tables 8
-and 9 of the submitted revision checked on 29 October 2026. They regenerate
-plots/tables without rerunning optimizations. Table 8 is the documentary
-Abaqus comparison and Table 9 is the sensitivity study. The final paper has
-Figures 1–7 and Tables 1–9. Saved artwork records the composition; numerical
-curves come from the declared arrays and tables.
-
-The figure entry script opens MATLAB windows by default. For batch export:
-
-```matlab
-addpath(fullfile(pwd, 'reproduction', 'submission_20261029'))
-reproduce_submitted_figures(false)
-```
-
-Eight numerical graphs and separate inset exports are written under
-`reproduction/submission_20261029/outputs/` as editable FIG, PNG, PDF and
-Windows EMF files. Times New Roman retains the manuscript typography.
-Figure 6(b) is the combined material-state/location artwork. The optional
-`submission_20261029/RUN_SUBMITTED_ASSIGNMENT.m` reconstructs it as native
-MATLAB graphics from the recorded states, separately from the eight graphs.
-
-| Submitted panels | Content |
-| --- | --- |
-| Fig. 6(a) | Compliance C and normalization coefficient nk through update 214 |
-| Fig. 6(b) | Assignments over updates 1–10 and locations at update 10 |
-| Fig. 6(c,d) | Stress-state inputs and history-averaged scores, updates 1–10 |
-| Fig. 7(a,b) | Actual fractions and per-update transitions over 1–214, with a final-20-update inset |
-| Fig. 7(c–e) | Common-window deadband compliance differences, counts over 1–214 and layouts at 214 |
-
-In Fig. 6(c,d), x = 1:10 identifies the update using FE input states 0:9.
-The first input is retained, while panel (b) shows the assignments after
-those updates. Figures 6(a) and 7(c) retain response states 0–214; Figures
-7(a,b) use post-update states/updates 1–214. State 0 provides the preceding
-state for the first transition and is not shifted to update 1. Full-history
-axes span 0–250, with blank space after 214. Zoom axes span 195–215, with
-data through 214. These are display margins only.
-
-The explicit historical route is:
-
-```matlab
-run('reproduction/RUN_LEGACY_20261024_FIGURES.m')
-```
-
-It preserves the eleven 23 October numerical panels and their original
-numbering, geometry and 2–214 transition convention.
-The former bridge energy graphs and C/2C table are historical evidence,
-outside the submitted figure/table set. Earlier continuation experiments
-are also outside the submitted scope. See [the panel guide](../reproduction/README.md)
-for full numbering and provenance.
-
-## Rerun the review experiments
-
-The separate execution engine records the declared study settings and keeps
-experimental variants separate from the two public baseline solver entry
-points. It restores the caller's MATLAB path and working directory after a
-run. From the repository root:
-
-```matlab
-addpath(fullfile(pwd, 'validation', 'review'))
-run_review_experiments('smoke')
-run_review_experiments('regression')
-```
-
-`run_review_experiments(mode, outputRoot)` accepts an optional output folder.
-If omitted, results go to `results/review_<mode>_<timestamp>/`.
-`validation/review/RUN_REVIEW_VALIDATION.m` is the F5 smoke-test entry point.
-
-| Mode | Work performed |
-| --- | --- |
-| `smoke` (default) | Small execution and verification checks |
-| `regression` | Compare the public solvers with the isolated review engine over the first 20 updates |
-| `baselines` | Rerun the cantilever and both bridge baselines |
-| `sensitivity` | Rerun the cantilever baseline and 16 one-factor variants (17 runs) |
-| `deadband_extension` | Rerun only the baseline and the 0.05, 0.5 and 5 MPa first-stop endpoints (4 runs) |
-| `continuation` | Optional historical study: rerun three cases with 50 updates beyond their first response stop; outside the final manuscript |
-| `initial10` | Record all-element inputs and replay the first ten updates of three cases |
-| `histories` | Record the five EPS paths through the common 214-update figure window and each required first-termination state, plus the initial-update checks |
-| `legacy_histories` | Optional earlier history study through 264 and 50 updates after first termination; outside the final manuscript |
-| `bridge_energy` | Rerun three baselines and the independent-Q4 energy/stress checks |
-| `all` | Run the three baselines, 16 variants, fixed-layout audits and current manuscript history studies |
-
-To plot a complete fresh run, pass its output root to
-`prepare_manuscript_figures` and run the returned bundle's
-`RUN_MANUSCRIPT_FIGURES.m`. Figure 7(a,b) is derived from the baseline phase
-history in the newly constructed `S` records; missing fresh data cause an
-error, without archived fallback. See
-[the manuscript guide](manuscript_reproduction.md) for the complete command
-sequence.
-
-The 29 October adapter validation used previously recorded FE histories and
-an audit fixture in MATLAB R2024b. It checked output derivation with the
-submitted TXT inputs unavailable and confirmed that a controlled material-state
-change altered the derived counts and fractions. It did not rerun a full
-optimization or Abaqus analysis. Native R2023a execution remains untested;
-see the [alignment record](submission_alignment_20261029.md) for the exact scope.
-
-Detailed case definitions and outputs are documented beside the execution
-entry point. Full histories can require gigabytes of disk space; full-mesh
-optimizations take substantially longer than plotting or smoke checks.
-The review code targets the tested MATLAB R2024b environment using base
-MATLAB. Compatibility expectations for older core-solver versions are not
-evidence that the whole review package has been tested on those releases.
-
-## Fixed Physical Conditions
-
-The public examples define their numerical conditions directly in the scripts.
-The principal conditions that must not be inferred from solver defaults are:
-
-| Example | Mesh | Dimensions | Thickness | External load | Self-weight |
+| Example | Mesh | Domain | Thickness | External load | Self-weight |
 | --- | --- | --- | --- | --- | --- |
 | Cantilever | 100 x 60 | 1000 x 600 mm | 1 mm | 1000 N point load | No |
-| Case 3a | 320 x 80 | 160 x 40 m | 1 m | 100 kN/m over 160 m, equal nodes, row 78 above the lower deck | Yes |
-| Case 3b | 320 x 80 | 160 x 40 m | 1 m | 100 kN/m over 160 m, equal nodes, upper row 1 | Yes |
+| III(a) | 320 x 80 | 160 x 40 m | 1 m | 100 kN/m, equal nodes on row 78 above the lower deck | Yes |
+| III(b) | 320 x 80 | 160 x 40 m | 1 m | 100 kN/m, equal nodes on the upper row 1 | Yes |
 
-Both bridge examples use `rho1 = 7800 kg/m^3`, `rho2 = 2400 kg/m^3`,
-`rho0 = 0`, and `g = 9.81 m/s^2`. The total prescribed deck load is 16 MN.
-Self-weight is recomputed from the current material layout at every finite-
-element analysis.
+The bridge deck load totals 16 MN. Densities are 7,800, 2,400 and 0 kg/m^3
+for M1, M2 and void, with gravity 9.81 m/s^2. Self-weight is assembled from
+the current material map at each FE analysis. See [examples.md](examples.md)
+for support indices, retained regions and boundary-condition diagrams.
 
-## Generated Files
+## Quantities and comparison windows
 
-Text reports contain MATLAB version, release, computer type, operating system, CPU, CPU core count, physical RAM when available, run settings, run time, response summary, and full iteration log.
+Compliance is reported as strain energy, `C = 0.5*F'*U = 0.5*U'*K*U`, in
+N·mm. A change in reporting convention must be distinguished from a change
+in physical load, stiffness or thickness. The optimizer retains elements
+using history-averaged selection scores, not a compliance gradient.
 
-Expected generated file patterns:
+Reported utilization is evaluated inside each actually assigned material:
+`100*VM/sigma_m1` for M1 and `100*VM/sigma_m2` for M2. Their contour signs
+identify +M1 and -M2; they do not identify the local stress state. This
+quantity is distinct from the internal `eta` score. The signed colorbar has
+separate linear positive and negative halves, zero at its centre and actual
+unequal extrema at its endpoints. Physical values are not rescaled.
 
-```text
-results/mbeso_run_report_*.txt
-results/mbeso_fixed_solid_run_report_*.txt
-results/mbeso_fixed_solid_result_*.mat
-```
+Table 9 compares each run at its own termination or cap. Figure 7 compares
+all five deadbands at common states through 214; runs that terminate earlier
+are recorded through that common window. Transition definitions and baseline
+sum checks are given in the [figure guide](manuscript_reproduction.md).
 
-Generated files are ignored by Git. The empty `results/` directory is preserved by `results/.gitkeep`.
+The 40 x 40 mm support/load exclusions are restricted to the Section 3.2
+mesh-consistency extrema. Those elements remain in FE analysis and design
+updates. All sensitivity results use full solid-domain extrema.
 
-Declared numerical reproduction inputs are intentionally stored outside
-`results/` and must remain in the distribution. Do not remove supplied
-MAT/CSV input records merely because fresh solver results are normally
-ignored by Git.
+## Verification scope and limitations
 
-## Numerical Baselines
+The supplied checks cover numerical-input integrity, output derivation,
+selected FE comparisons, public/instrumented solver agreement and recorded
+update replay. They do not establish accuracy at every intermediate FE state
+or exact reproduction of the reference publication.
 
-Compact reference values and comparison rules are stored in:
+- The bridge reference-compliance discrepancy remains unresolved.
+- Eleven intermediate-FE criterion exceedances remain part of the numerical
+  evidence. Agreement at final layouts or at selected subsequent updates
+  does not remove these observations.
+- Gauss-mean stress, Gauss-maximum stress and the 20 mm second-filter-radius
+  conditions reach the 1,000-update cap in Table 9.
+- Deadband effects on switching are nonmonotonic, and a larger band can
+  alter the final layout. A small response-change criterion does not prove
+  that material assignments have stopped changing.
+- Table 8 reproduces reported, rounded Abaqus comparisons. Abaqus input jobs
+  and an Abaqus execution interface are not included.
 
-```text
-validation/VALIDATION_SUMMARY.md
-validation/reference_results.csv
-validation/cantilever_literature_comparison.csv
-validation/mesh_independence_reference.csv
-validation/bridge_benchmark_reference.csv
-validation/abaqus_crosscheck.csv
-```
+The III(a) value printed as -273.99% in Table 7 corresponds to a stored
+value of -273.98497258879%; conventional two-decimal rounding of that stored
+value is -273.98%. Preserve full precision for numerical comparisons and
+distinguish the printed table entry from a recomputed rounded value.
 
-The executable baseline includes convergence status, iteration count,
-compliance, solid ratio, material counts, and full-domain response extrema.
-The mesh study uses a fixed 40 x 40 mm exclusion only for extrema evaluation.
-The bridge baseline uses a 1 m out-of-plane thickness and full-domain response
-values. These data are intended to detect unintended code or example changes;
-they are not a claim that all MATLAB releases or sparse linear-algebra
-libraries will produce an identical discrete topology.
+Reference summaries and tolerances are documented in
+[validation/VALIDATION_SUMMARY.md](../validation/VALIDATION_SUMMARY.md).
+The [equation-to-code map](equation_code_map.md) identifies the exact
+`src/mbeso.m` source used for Table 3. Editing comments can change line
+references even when executable statements are unchanged.
 
-The source annotations added for the review are mapped in
-[equation_code_map.md](equation_code_map.md). The map identifies the exact
-annotated `src/mbeso.m` snapshot. Updating comments shifts Table 3's line
-numbers even when all executable statements remain unchanged.
+## Source and release checks
 
-## Interpretation of the saved evidence
-
-- Compliance is strain energy `C = 0.5*F'*U`. The historical C/2C reporting
-  comparison tests an alternative convention, not a fitted correction factor;
-  it is not submitted Table 8.
-- Material-wise utilization divides VM by the actual assigned material's
-  strength. Positive M1/negative M2 contour signs are display identifiers;
-  the optimizer's `eta` follows its stress-state normalization.
-- Sixteen one-factor variants belong to six factor groups. Three variants
-  reached the 1,000-update cap; their endpoints remain marked as capped.
-- Figure 7 compares deadbands at common iteration 214; Table 9 uses each
-  run's own termination or cap. Earlier-terminating cases retain histories
-  when continued to 214. Transition counts in submitted panels (b,d) cover
-  updates 1–214, including comparison with the initial state at update 1.
-  The observed effect is nonmonotonic, and response convergence does not
-  imply a stationary material layout.
-- Figure 7(a,b) uses EPS = 0. Actual solid/M1/M2 fractions are measured over
-  all 6,000 elements at states 1–214 and finish at 40.00%/9.15%/30.85%.
-  The transition history totals 5,725 TC and 5,200 SV events, including
-  2,439 TC and 60 SV at update 1. TC counts changes between material IDs
-  1 and 2 among continuing solids; SV counts consecutive occupancy changes.
-  An element can contribute more than once. The 195–214 inset contains
-  47 TC and 102 SV from the same history; update 214 has one TC and four SV.
-  These counts do not establish the evolution after termination.
-- The historical 23 October baseline totals 3,286 TC / 5,140 SV exclude
-  update 1 and apply only to the dated replay route.
-
-- The bridge reference-compliance discrepancy and the separately recorded
-  11 intermediate-FE criterion exceedances remain limitations. Final-state
-  agreement and update replay checks do not erase those observations.
-- The 40 x 40 mm exclusions belong only to the Section 3.2 mesh-consistency
-  comparison. Full solid-domain extrema are used in the added sensitivity
-  analysis.
-
-All generated material layouts and assignment strips, including examples,
-mesh-consistency outputs and Fig. 6(b), use M1 tensile blue, M2 compressive
-red and void white. Use the shared `src/mbeso_material_palette.m` definition;
-preserved original EMFs may use older conventions. Material IDs remain
-unchanged. Zero-centred signed-contour colorbars retain actual asymmetric
-endpoints and use separate linear negative and positive halves; their physical
-values remain unchanged. A stress-magnitude colormap does not identify material.
-
-## Release Checklist
-
-Before creating a GitHub release:
-
-1. Run the manuscript example scripts and keep the generated reports outside the Git repository.
-2. Confirm all figure/table inputs are fixed in the example scripts.
-3. Compare the results with `validation/reference_results.csv`.
-4. Confirm that the copyright, GPL, and preserved third-party MIT notices are
-   current and complete.
-5. Exclude temporary fresh-run MAT/report files and unreferenced assets, while
-   retaining declared saved reproduction inputs and their provenance.
-6. Update `README.md` and `CITATION.cff` with final public metadata.
-7. Create a new immutable release tag for the reviewed snapshot; do not move
-   an existing published tag to different source files.
-8. Archive that exact tag and add the archival DOI to `CITATION.cff`.
-
-## Reporting Computational Environment
-
-For each manuscript result, report at least:
-
-- MATLAB version and release,
-- operating system,
-- CPU model and core count,
-- RAM,
-- mesh size,
-- material constants,
-- filter radii,
-- boundary/load case,
-- line-load distribution and loaded node row,
-- densities, gravity, and out-of-plane thickness when self-weight is used,
-- run time,
-- Git release tag and DOI.
+Before archiving a source snapshot, run the regression and smoke checks,
+verify the figure/table inputs and outputs, and record the computational
+environment. Keep declared MAT/CSV input records in the distribution while
+excluding temporary analysis output. Check the GPL and preserved third-party
+MIT notices. Published tags should remain immutable; cite the release DOI
+and exact commit associated with the results.

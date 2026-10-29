@@ -1,0 +1,16 @@
+{
+  "source_mode": "recorded_data",
+  "description": "Recorded cantilever histories and element decisions used for manuscript Figures 6 and 7.",
+  "mesh_elements": [
+    60,
+    100
+  ],
+  "response_states": [
+    0,
+    214
+  ],
+  "transition_updates": [
+    1,
+    214
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "figure_source": "figure_sources.pptx",
+  "sha256": "33a4714831b9277f7a84ab345a1e0b738d393a6586cd355ae1bb0d97fab4f267",
+  "slides": 18,
+  "figures": "1-7",
+  "numerical_records": [
+    "reproduction/figure_06/data/figure_data.mat",
+    "reproduction/figure_07/data/figure_data.mat"
+  ],
+  "note": "The presentation contains figure composition and annotations. Numerical previews are generated from the MATLAB input records."
+}

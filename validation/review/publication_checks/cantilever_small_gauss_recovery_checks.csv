@@ -1,4 +1,0 @@
-check,relative_error,tolerance,passed
-"gauss_points",0,9.9999999999999998e-13,1
-"gauss_vm_mean",0,9.9999999999999998e-13,1
-"gauss_vm_max",0,9.9999999999999998e-13,1

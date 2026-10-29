@@ -3,4 +3,4 @@ tensile_material_fraction,9.15,7.2,percent_of_total_domain,1.9500000000000002,27
 compliance,574.78,614.16,N_mm,39.379999999999995,6.412009899700403,reference_compliance_definition_unconfirmed
 maximum_von_mises_stress,128.91,53.32,MPa,75.59,141.76669167291823,full_solid_centroidal;reference_evaluation_details_unconfirmed
 maximum_signed_utilization_within_tensile_material,51.56,21.33,percent,30.230000000000004,141.72526957337087,assigned_M1_VM_over_250_MPa
-signed_extreme_within_compressive_material,-59.79,-26.27,percent,33.519999999999996,127.59802055576702,assigned_M2_VM_over_50_MPa;reference_value_as_written_in_20261014_manuscript_not_reverified
+signed_extreme_within_compressive_material,-59.79,-26.27,percent,33.519999999999996,127.59802055576702,assigned_M2_VM_over_50_MPa;reported_reference_value_not_independently_reverified

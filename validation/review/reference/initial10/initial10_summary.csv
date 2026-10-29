@@ -1,4 +1,0 @@
-case_id,updates,elements,early_TC_element,boundary_element,stable_element,component_checks_passed,component_max_absolute_error_MPa,phase_prefix_mismatches,C_prefix_max_absolute_error_Nmm,independent_updates,independent_updates_passed
-"cantilever",10,6000,974,5829,1,10,1.4210854715202004e-14,0,0,10,10
-"bridge_3a",10,25600,2070,14,160,10,5.6843418860808015e-14,0,0,10,10
-"bridge_3b",10,25600,326,310,1,10,5.6843418860808015e-14,0,0,10,10

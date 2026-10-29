@@ -1,1 +1,0 @@
-Historical 2026-08 release summary tables. These preserve stress-sign-grouped signed optimizer-score extrema. They are not the revised assigned-material utilization tables. The executable legacy regression contract stays in ../reference_results.csv; use ../assigned_material_baselines.csv and ../manuscript_tables for current reporting.

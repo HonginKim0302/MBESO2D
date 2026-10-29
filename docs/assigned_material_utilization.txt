@@ -1,4 +1,4 @@
-Assigned-material utilization for reporting (2026-10-13)
+Assigned-material utilization for reporting
 
 The displayed utilization uses the actual material assignment, not the sign
 of the principal-stress sum. Let VM be the center-point von Mises stress:
@@ -17,16 +17,14 @@ mbeso_plot_stress_contours(result) and mbeso_write_run_report(result,...)
 use this definition. The examples run_cantilever, run_case_3a and run_case_3b
 already call the contour function.
 
-Solver response.eta and eta_filtered retain their optimization definitions.
-The src solvers, FE calculation, convergence condition and update scores
-have not been modified. Historical regression reference values and legacy
-signed_eta_* fields in compute_excluded_extrema remain optimization
-diagnostics; they must not be relabeled as assigned-material utilization.
-New assigned_m1_* and assigned_m2_* fields explicitly report the new quantity.
+Solver response.eta and eta_filtered are optimization quantities. The
+signed_eta_* fields in compute_excluded_extrema are also optimization
+diagnostics, not assigned-material utilization. The assigned_m1_* and
+assigned_m2_* fields report the corresponding material-wise quantities.
 
 Example with sigma_m1=250 MPa and sigma_m2=50 MPa:
 an M1 element with VM=33.3335 MPa has utilization +13.3334%, even if its
-principal-stress sum is negative. An old stress-state-based value -66.667%
+principal-stress sum is negative. A stress-state-based value -66.667%
 at this element is not the maximum utilization of material M2.
 
 Mesh consistency:
@@ -49,9 +47,9 @@ the printed M1/M2 maxima and CSV maxima are nonnegative.
 Use this exclusion study only for mesh consistency.
 All generated categorical material layouts, including solver iterations,
 mesh consistency and manuscript reproduction, use M1 tensile blue, M2
-compressive red and void white (unified 2026-10-14). Their legends and
+compressive red and void white. Their legends and
 material-assignment strips use src/mbeso_material_palette.m as the same
-source. Preserved original manuscript artwork may contain older colors.
+source.
 
 Focused verification:
     addpath tests
@@ -63,7 +61,7 @@ postprocessing verification, not a new validation of the FE solver.
 For mixed local installations, add the visualization folder of the intended
 checkout last and confirm which mbeso_plot_stress_contours resolves to it.
 
-Signed colorbars (corrected 2026-10-13):
+Signed colorbars:
 The shared mbeso_zero_centered_scale helper keeps actual negative and
 positive extrema at the ends and places zero exactly halfway along the bar.
 Negative and positive halves each have a separate linear scale. For example,

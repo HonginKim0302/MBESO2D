@@ -59,39 +59,15 @@ The example scripts are the authoritative definitions of mesh indices, load
 rows, supports, and retained masks. Where a continuum load symbol spans a deck
 in a schematic, the documented node row states its exact discrete location.
 
-## Added manuscript verification figures and tables
+## Manuscript figures and tables
 
-From the repository root:
+The [manuscript reproduction guide](manuscript_reproduction.md) lists the
+Figure 6-7 scripts and Table 8-9 generators. They use supplied numerical
+records. Fresh calculation modes are documented in
+[reproducibility.md](reproducibility.md).
 
-```matlab
-run('reproduction/RUN_MANUSCRIPT_FIGURES.m')
-addpath(fullfile(pwd, 'validation', 'manuscript_tables'))
-RUN_SUBMISSION_TABLES;
-```
-
-| Manuscript item | Numerical source and purpose |
-| --- | --- |
-| Fig. 6 | Baseline compliance/nk history, first-ten-update element inputs, assignments and locations after update 10. Panels (c,d) use FE states 0–9 at update coordinates 1–10. |
-| Fig. 7 | Baseline fractions and transitions, deadband response through iteration 214, transition totals over updates 1–214 including update 1, and layouts at 214. |
-| Table 8 | Documentary MBESO2D/Abaqus final-layout FE comparison; Abaqus jobs are not bundled. |
-| Table 9 | Baseline plus sixteen one-factor variants (17 rows), with assigned-material utilization and explicit termination status. |
-
-This is the submitted numbering checked on 29 October 2026. The former
-bridge energy graphs and C/2C table remain historical evidence. Use
-`reproduction/RUN_LEGACY_20261024_FIGURES.m` and the original
-`RUN_MANUSCRIPT_TABLES` function for the dated 23 October replay.
-
-The plotting/table scripts regenerate outputs from records. Use the separate
-`validation/review/run_review_experiments.m` to rerun analyses; see
-[reproducibility.md](reproducibility.md) for the distinction and commands.
-The 40 x 40 mm corner exclusions apply only to the Section 3.2
-mesh-consistency extrema. They are not used for the new sensitivity study.
-
-All generated example material layouts, three-resolution mesh layouts and
-manuscript material maps/assignment strips use M1 tensile blue, M2 compressive
-red and void white, as defined by `src/mbeso_material_palette.m`. Original
-manuscript artwork is preserved separately and may use older colors. Material
-IDs and numerical fields are unchanged by this display choice. Signed
-utilization displays +M1/-M2 and uses the corresponding assigned-material
-strength in both subsets. Stress-magnitude colormaps are separate from this
-categorical material palette.
+All material layouts, mesh-comparison layouts and assignment strips use
+M1 tensile blue, M2 compressive red and void white, as defined in
+`src/mbeso_material_palette.m`. Signed utilization uses +M1/-M2 and the
+assigned material's strength. Stress-magnitude colormaps represent physical
+field values independently of this categorical material palette.

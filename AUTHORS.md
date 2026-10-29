@@ -1,6 +1,6 @@
 # Authors
 
-## Current revised manuscript
+## Manuscript authors
 
 - Hongin Kim, Department of Civil, Environmental and Architectural Engineering, Korea University, Seoul 02841, Korea
 - Jaehee Choi, Department of Civil, Environmental and Architectural Engineering, Korea University, Seoul 02841, Korea
@@ -12,15 +12,10 @@ Corresponding manuscript authors:
 - Minsoo Sung, msung@ohio.edu
 - Donghyuk Jung, jungd@korea.ac.kr
 
-These names follow the submitted revision checked on 2026-10-29. They do not
-by themselves assign source-code authorship or announce final publication.
+## Software contributors
 
-## Existing software contributor credits
-
-The existing MBESO2D version 1.0.0 metadata credits Hongin Kim and Donghyuk
-Jung. The solver headers identify Hongin Kim as main author. These credits
-are retained; no additional code contribution is inferred from manuscript
-coauthorship.
+The software metadata credits Hongin Kim and Donghyuk Jung. The solver
+headers identify Hongin Kim as the main author.
 
 Software support and public contact:
 

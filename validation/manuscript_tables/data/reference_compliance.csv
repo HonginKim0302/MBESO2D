@@ -1,4 +1,0 @@
-run_id,case_label,display_unit,Nmm_per_display_unit,reference_C_Nmm,reference_definition_status
-cantilever,I(b),N mm,1,614.16,Reported value; same C convention assumed for comparison
-bridge_3a,III(a),MN m,1000000000.0,7820000000.0,Reference bridge unit interpreted as N m; convention unconfirmed
-bridge_3b,III(b),MN m,1000000000.0,5000000000.0,Reference bridge unit interpreted as N m; convention unconfirmed

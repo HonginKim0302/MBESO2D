@@ -9,9 +9,9 @@ This repository accompanies the manuscript:
 
 > MBESO2D: An open MATLAB implementation of stress-state-based multi-material BESO
 
-The current revised manuscript lists Hongin Kim, Jaehee Choi, Minsoo Sung and
+The manuscript lists Hongin Kim, Jaehee Choi, Minsoo Sung and
 Donghyuk Jung. See [AUTHORS.md](AUTHORS.md) for manuscript affiliations and
-the separately recorded software contributor credits.
+the software contributor credits.
 
 The implementation is organized for a reproducible SoftwareX-style release: compact MATLAB solvers are kept in `src/`, manuscript examples in `examples/`, plotting/report utilities in `visualization/`, and documentation in `docs/`.
 
@@ -19,18 +19,15 @@ The implementation is organized for a reproducible SoftwareX-style release: comp
 
 - Software name: `MBESO2D`
 - Version: `1.0.0`
-- Latest formal release: `v1.0.0`; `main` includes the dated manuscript reproducibility update in [CHANGELOG.md](CHANGELOG.md)
+- Latest formal release: `v1.0.0`
 - Repository: https://github.com/HonginKim0302/MBESO2D
 - Language: MATLAB
 - License: GNU General Public License v3.0 or later (`GPL-3.0-or-later`)
 - Third-party code: identified NewBESO/BESO79 portions retain their MIT notice;
   see `THIRD_PARTY_NOTICE.md`
 
-The existing `v1.0.0` release and tag are preserved. The additional manuscript
-reproduction files described below are provided on `main`; they are not included
-in the original `v1.0.0` release archive. Use this branch and record the exact
-commit when reproducing the revised manuscript. No new release or tag is
-created by this dated update.
+`VERSION` identifies the latest formal release. For reproducible calculations,
+record the exact Git commit as well as the MATLAB version.
 
 ## Contents
 
@@ -52,10 +49,10 @@ created by this dated update.
 
 ## Authors
 
-The current manuscript authors are Hongin Kim, Jaehee Choi, Minsoo Sung and
+The manuscript authors are Hongin Kim, Jaehee Choi, Minsoo Sung and
 Donghyuk Jung. Corresponding manuscript authors are Minsoo Sung
 (`msung@ohio.edu`) and Donghyuk Jung (`jungd@korea.ac.kr`). Software support:
-`kimhongin13@korea.ac.kr`. Full affiliations and existing software credits are
+`kimhongin13@korea.ac.kr`. Full affiliations and software credits are
 listed in [AUTHORS.md](AUTHORS.md).
 
 ## Main Features
@@ -70,13 +67,13 @@ listed in [AUTHORS.md](AUTHORS.md).
 - Text run reports with MATLAB version, OS, CPU, RAM, timing, settings, response summary, and iteration log
 - Automatic `.mat` result export for `mbeso_fixed_solid` examples
 - Brief teaching comments and an [equation-to-code map](docs/equation_code_map.md)
-- Saved numerical data, MATLAB figure reproduction, and separate review-experiment reruns
+- Numerical records, editable manuscript figures and tables, and verification experiments
 
 ## Requirements
 
 - Tested with MATLAB R2024b Update 7 on Windows 64-bit.
 - The core solvers and visualization utilities are expected to support MATLAB R2019b or later; older releases have not been regression-tested.
-- The manuscript reproduction and review workflows were verified with MATLAB R2024b.
+- The manuscript reproduction and verification workflows were verified with MATLAB R2024b.
 - No additional MATLAB toolbox is required.
 - The code uses base MATLAB sparse matrices and graphics.
 
@@ -175,72 +172,31 @@ from the optimizer's stress-state-based `eta` score.
 
 ```text
 MBESO2D/
-  src/
-    mbeso.m
-    mbeso_fixed_solid.m
-  examples/
-    run_cantilever.m
-    run_case_3b.m
-    run_case_3a.m
-  visualization/
-    mbeso_plot_beso_evolution.m
-    mbeso_plot_history.m
-    mbeso_plot_stress_contours.m
-    mbeso_plot_displacement.m
-    mbeso_enable_displacement_datatips.m
-    mbeso_write_run_report.m
-  docs/
-    assets/
-      cantilever_boundary_conditions.png
-      case_3a_boundary_conditions.png
-      case_3b_boundary_conditions.png
-    algorithm_overview.md
-    examples.md
-    input_parameters.md
-    reproducibility.md
+  src/                         # FE and optimization solvers
+  examples/                    # Cantilever and bridge examples
+  visualization/               # Layouts, contours, histories and reports
+  reproduction/
+    RUN_MANUSCRIPT_FIGURES.m    # All numerical panels in Figures 6 and 7
+    figure_06/                 # Individual Figure 6 scripts and input data
+    figure_07/                 # Individual Figure 7 scripts and input data
+    common/                    # Shared plotting helpers
+    preparation/               # Extraction from fresh FE histories
   validation/
-    review/
-      run_review_experiments.m
-    manuscript_tables/
-      RUN_SUBMISSION_TABLES.m
-      RUN_MANUSCRIPT_TABLES.m
-    figures/
-      cantilever_benchmark.png
-      mesh_exclusion_regions_40mm.png
-      mesh_resolution_study.png
-      bridge_benchmarks_1m.png
-      abaqus_crosscheck.png
-    VALIDATION_SUMMARY.md
-    reference_results.csv
-    cantilever_literature_comparison.csv
-    mesh_independence_reference.csv
-    bridge_benchmark_reference.csv
-    abaqus_crosscheck.csv
-    compute_excluded_extrema.m
+    experiments/               # Baselines, sensitivity and history studies
+    manuscript_tables/         # Tables 8 and 9
+    figures/                   # Benchmark comparison plots
     run_all_validation.m
     run_mesh_independence.m
     run_regression_checks.m
-  reproduction/
-    RUN_MANUSCRIPT_FIGURES.m
-    RUN_LEGACY_20261024_FIGURES.m
-    submission_20261029/
-  tests/
-    run_smoke_tests.m
-  results/
-    .gitkeep
-    README.md
+  tests/                       # Execution and reporting checks
+  docs/                        # Method, parameters and reproduction guides
+    assets/figures/            # Figure composition and numerical previews
+  results/                     # Generated analysis output (ignored by Git)
+  setup_mbeso_path.m
   README.md
-  AUTHORS.md
-  CONTRIBUTING.md
   CITATION.cff
   CHANGELOG.md
-  LICENSE
-  LICENSE-NOTICE
-  THIRD_PARTY_NOTICE.md
-  .zenodo.json
   VERSION
-  setup_mbeso_path.m
-  .gitignore
 ```
 
 Generated files under `results/` are ignored by Git.
@@ -354,9 +310,7 @@ All generated material layouts, assignment strips and material legends use
 **M1 tensile = blue, M2 compressive = red, void = white**. This includes the
 live solver figures, example outputs, mesh-consistency layouts and manuscript
 Fig. 6(b). The shared definition is `src/mbeso_material_palette.m`.
-Preserved original manuscript EMFs may use earlier or conflicting conventions;
-they are historical artwork, not the palette specification. A plotting palette
-never changes `mi_map`. Stress fields are element-wise and unsmoothed; a
+The plotting palette never changes `mi_map`. Stress fields are element-wise and unsmoothed; a
 von Mises stress colormap represents stress magnitude, not material identity.
 
 Signed-contour colorbars keep zero at the centre and the actual unequal
@@ -369,65 +323,48 @@ outputs are ignored by Git.
 
 ## Validation and Reproducibility
 
-To regenerate the numerical graphs and tables associated with the submitted
-revision checked on 29 October 2026, run from the repository root:
+From the repository root, reproduce the manuscript graphs and tables:
 
 ```matlab
-run('reproduction/RUN_MANUSCRIPT_FIGURES.m')  % submitted Figs. 6 and 7
+run('reproduction/RUN_MANUSCRIPT_FIGURES.m')
 addpath(fullfile(pwd, 'validation', 'manuscript_tables'))
-RUN_SUBMISSION_TABLES;                     % submitted Tables 8 and 9
+[table8, table9] = RUN_MANUSCRIPT_TABLES;
 ```
 
-These entry points reuse numerical records; they do not rerun optimizations.
-Eight numerical graphs, with separate inset exports, are written under
-`reproduction/submission_20261029/outputs/` as editable FIG, PNG, PDF and
-Windows EMF files. Figure 6(b) combines material-state and location artwork;
-an optional native reconstruction is available in the panel guide.
-Figure 7 fractions and transitions cover updates 1–214, including the first
-update from the initial state. Response curves in Figures 6(a) and 7(c)
-retain states 0–214. State 0 also defines the first transition. Table 8 is the Abaqus comparison; Table 9 is the baseline
-plus 16 one-factor variants at their own stopping points.
+The figure command opens eight numerical panels and two separate zooms from
+Figures 6 and 7, and saves editable FIG, PNG, PDF and Windows EMF files in
+`reproduction/outputs/`. Each panel also has its own script. Figure 6(b),
+which combines material assignments and element locations, has an optional
+native MATLAB reconstruction. The table command writes Tables 8 and 9 to
+`results/manuscript_tables/`. These commands use supplied numerical records;
+they do not rerun optimization or Abaqus.
 
-The separate [`run_review_experiments`](validation/review/run_review_experiments.m)
-entry point reruns the declared review experiments. Its modes and prerequisites
-are described in [docs/reproducibility.md](docs/reproducibility.md).
-See [the panel and data guide](reproduction/README.md) for the current mapping
-and saved-data/fresh-data distinction. The [29 October alignment record](docs/submission_alignment_20261029.md)
-and [submitted figure gallery](docs/assets/manuscript_20261029/README.md) document
-the final numbering and source composition. The 23 October numerical plots remain
-available through `reproduction/RUN_LEGACY_20261024_FIGURES.m` under their
-earlier numbering and transition-count convention.
+- [Figure and table guide](docs/manuscript_reproduction.md): panel meanings,
+  individual scripts, data windows and outputs.
+- [Reproduction workflow](docs/reproducibility.md): fresh calculations,
+  verification scope and computational environment.
+- [Figure sources and previews](docs/assets/figures/README.md): manuscript
+  composition and editable source artwork.
+- [Validation summary](validation/VALIDATION_SUMMARY.md): benchmark values
+  and comparison rules.
 
-The review evidence checks implementation, responses and observed iteration
-behaviour. It does not establish exact reproduction of Li and Xie's results:
+For a small verification run:
 
-- The bridge reference-compliance discrepancy remains unresolved.
-- Three of the 16 one-factor variants reached the 1,000-update cap.
-- Deadband effects on material switching are nonmonotonic; a larger band can
-  change the layout rather than simply remove noise.
-- Satisfying the analysis termination criterion does not imply a stationary
-  layout. The separate 11
-  intermediate-FE criterion exceedances remain recorded with their scope.
+```matlab
+addpath(fullfile(pwd, 'validation', 'experiments'))
+run_verification_experiments('smoke');
+```
 
-For a release snapshot:
+The verification evidence addresses the implemented calculations and the
+observed iteration behaviour. The bridge reference-compliance discrepancy
+and 11 intermediate-FE criterion exceedances remain limitations. Three
+sensitivity conditions reach the 1,000-update cap, and deadband effects are
+nonmonotonic. Analysis termination does not imply a stationary material layout.
 
-1. Record MATLAB version, operating system, CPU, RAM, and run time from the generated report.
-2. Keep the exact example scripts used for manuscript figures.
-3. Run `validation/run_regression_checks.m` and `tests/run_smoke_tests.m` before tagging a release.
-4. Compare the numerical summaries against the CSV files in `validation/`.
-5. Review the third-party attribution.
-6. Create a new fixed GitHub release tag after reviewing the local changes.
-7. Archive the release and add the DOI to `CITATION.cff` when available.
-
-The quantitative tables, interpretation notes, and rerun entry points are in
-[`validation/VALIDATION_SUMMARY.md`](validation/VALIDATION_SUMMARY.md). The
-release procedure is detailed in
-[`docs/reproducibility.md`](docs/reproducibility.md).
-
-The final manuscript validation uses full-domain responses for the primary
-cantilever and 1 m bridge benchmarks. A fixed 40 x 40 mm post-processing patch
-is used only in the three-resolution cantilever study; the excluded elements
-remain active in both optimization and finite-element analysis.
+The fixed 40 x 40 mm evaluation exclusions apply only to the three-resolution
+cantilever mesh-consistency study. All those elements remain active in the
+FE analysis and optimization. The sensitivity study uses full solid-domain
+response extrema.
 
 ## Troubleshooting
 
