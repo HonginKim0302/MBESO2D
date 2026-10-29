@@ -133,36 +133,6 @@ The 40 x 40 mm support/load exclusions are restricted to the Section 3.2
 mesh-consistency extrema. Those elements remain in FE analysis and design
 updates. All sensitivity results use full solid-domain extrema.
 
-## Verification scope and limitations
-
-The supplied checks cover numerical-input integrity, output derivation,
-selected FE comparisons, public/instrumented solver agreement and recorded
-update replay. They do not establish accuracy at every intermediate FE state
-or exact reproduction of the reference publication.
-
-- The bridge reference-compliance discrepancy remains unresolved.
-- Eleven intermediate-FE criterion exceedances remain part of the numerical
-  evidence. Agreement at final layouts or at selected subsequent updates
-  does not remove these observations.
-- Gauss-mean stress, Gauss-maximum stress and the 20 mm second-filter-radius
-  conditions reach the 1,000-update cap in Table 9.
-- Deadband effects on switching are nonmonotonic, and a larger band can
-  alter the final layout. A small response-change criterion does not prove
-  that material assignments have stopped changing.
-- Table 8 reproduces reported, rounded Abaqus comparisons. Abaqus input jobs
-  and an Abaqus execution interface are not included.
-
-The III(a) value printed as -273.99% in Table 7 corresponds to a stored
-value of -273.98497258879%; conventional two-decimal rounding of that stored
-value is -273.98%. Preserve full precision for numerical comparisons and
-distinguish the printed table entry from a recomputed rounded value.
-
-Reference summaries and tolerances are documented in
-[validation/VALIDATION_SUMMARY.md](../validation/VALIDATION_SUMMARY.md).
-The [equation-to-code map](equation_code_map.md) identifies the exact
-`src/mbeso.m` source used for Table 3. Editing comments can change line
-references even when executable statements are unchanged.
-
 ## Source and release checks
 
 Before archiving a source snapshot, run the regression and smoke checks,
