@@ -18,10 +18,11 @@ in this repository follow that arrangement.
 | Table 8 | MBESO2D/Abaqus final-layout comparison | `validation/manuscript_tables/` |
 | Table 9 | Baseline and sixteen one-factor conditions | `validation/manuscript_tables/` |
 
-The PowerPoint source preserves figure composition, including manually placed
-labels, connectors and schematics. The numerical scripts regenerate curves,
-bars, axes and legends from numerical records. They do not treat a raster
-image as numerical input or claim pixel-identical PowerPoint composition.
+The PowerPoint source preserves the figure composition, including manually
+placed labels, connectors, and schematics. The MATLAB scripts regenerate
+curves, bars, axes, and legends from numerical records rather than raster
+images. They reproduce the numerical plots; the manually arranged
+PowerPoint composition may differ.
 
 ## Reproduce the numerical panels
 
@@ -32,7 +33,7 @@ run('reproduction/RUN_MANUSCRIPT_FIGURES.m')
 ```
 
 This opens ten graph windows: eight main panels and two separate zooms.
-For batch export without windows:
+To export the figures without opening windows:
 
 ```matlab
 addpath(fullfile(pwd, 'reproduction'))
@@ -63,7 +64,7 @@ Each script in the following table can also be opened and run directly.
 
 `figure_06/RUN_FIGURE_06.m` runs the four Figure 6 panels, including the
 optional assignment/location panel. `figure_07/RUN_FIGURE_07.m` runs the
-Figure 7 panels and their zooms. The root all-figures entry point selects
+Figure 7 panels and their zooms. The main all-figures script opens
 the ten numerical graphs.
 
 ## Reproduce the tables
@@ -78,8 +79,8 @@ be supplied as the first argument. Published table snapshots are provided in
 `validation/manuscript_tables/published/`.
 
 Table 8 reproduces the eight reported fixed-layout FE comparisons. Its Abaqus
-results are documentary records; this command does not run Abaqus or derive
-unrounded errors from the rounded values. Table 9 contains seventeen rows:
+results are stored records of the reported comparison; this command does not
+run Abaqus or derive unrounded errors from the rounded values. Table 9 contains seventeen rows:
 the cantilever baseline and sixteen one-factor conditions. Each row uses its
 own analysis termination or iteration cap, including the three conditions
 that reach 1,000 updates. It is distinct from the equal-iteration comparison
@@ -87,10 +88,10 @@ in Figure 7.
 
 ## Iteration and transition definitions
 
-In Figure 6(c,d), x = 1:10 identifies the update consuming FE input states
+In Figure 6(c,d), x = 1:10 identifies the updates that use FE input states
 0:9. Figure 6(b) shows the assignments produced by those updates. Response
-histories in Figures 6(a) and 7(c) retain state 0; they are not shifted.
-Figure 7(a,b) uses post-update states or transitions 1:214. The full-history
+histories in Figures 6(a) and 7(c) retain state 0 and are not shifted.
+Figure 7(a,b) shows post-update states or transitions 1:214. The full-history
 axes extend to 250 and zoom axes to 215 for display space; data end at 214.
 
 - A material transition changes material ID 1 to 2 or 2 to 1 while the
@@ -108,5 +109,5 @@ classification is therefore visible separately from subsequent switching.
 
 At state 214, the actual solid fraction is 40.00%, comprising 9.15% tensile
 material and 30.85% compressive material. All material displays use M1 blue,
-M2 red and void white. See [reproducibility.md](reproducibility.md) for fresh
-calculations and the limits of the verification evidence.
+M2 red, and void white. See [reproducibility.md](reproducibility.md) for
+instructions on generating new calculation records.

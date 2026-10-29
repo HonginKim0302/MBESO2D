@@ -1,6 +1,6 @@
 # Table 9. One-factor endpoint sensitivity
 
-Each condition uses its own analysis-termination criterion or iteration cap. All stresses are centroidal and evaluated over all solid elements. Assigned-material utilization uses M1 = 250 MPa and M2 = 50 MPa; the M2 maximum magnitude is shown with a minus sign.
+Each condition is reported at its own analysis-termination point or iteration cap. All stresses are centroidal and evaluated over all solid elements. Assigned-material utilization uses M1 = 250 MPa and M2 = 50 MPa; the M2 maximum magnitude is shown with a minus sign.
 
 | Setting | C change (%) | Peak VM (MPa) | M1 (%) | Signed M2 (%) | Iterations | Termination |
 |---|---:|---:|---:|---:|---:|---|

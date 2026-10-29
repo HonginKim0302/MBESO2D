@@ -42,7 +42,7 @@ result = mbeso_fixed_solid(nelx, nely, volfrac, er, options)
 | `designMask` | all true | Logical active design-domain mask. Alias: `design_mask`. |
 | `even_keep_count` | solver-specific | Adjust an odd keep count to an even count without enforcing mirror pairs. |
 
-The physical element size is resolved from `structure_width / nelx` and `structure_height / nely`; square elements are required.
+The physical element size is calculated from `structure_width / nelx` and `structure_height / nely`; square elements are required.
 
 ## Iteration Options
 
@@ -54,15 +54,16 @@ The physical element size is resolved from `structure_width / nelx` and `structu
 For both solvers, `result.converged` requires the actual solid fraction to be
 at most `volfrac + 1/N` and `change <= tau`; the response test starts after
 the first ten updates. This flag does not require a stationary topology or
-material assignment. Reaching the cap without convergence records
+material assignment. Reaching the iteration limit without convergence records
 `termination_reason = 'max_iterations'`. The standard solver's forced-budget
 mode records `'fixed_iteration_limit'`. `max_iter` is not an accepted option
 name; use `max_iterations` or its alias `iteration_limit`.
 
-The public baseline has no material-classification deadband. Deadband,
-alternative recovery and other sensitivity choices are explicit options of
-the separate review reproduction engine, not silently added defaults of
-these two public solver entry points.
+The baseline solvers have no material-classification deadband. The
+instrumented verification engine in `validation/experiments/` provides
+explicit options for deadband, alternative stress recovery, and other
+sensitivity studies. These options do not alter the defaults of the two
+public solver entry points.
 
 ## Output Options
 
@@ -94,7 +95,7 @@ results/mbeso_fixed_solid_result_YYYYMMDD_HHMMSS.mat
 
 `non_design_mask` must not overlap `fixed_solid_mask`. The resolved non-design
 mask is stored in `result.settings.non_design_mask`. Retained solids count
-towards the whole-domain volume target and can change material identity.
+toward the whole-domain volume target and can change material identity.
 
 ## Material Properties and Units
 
@@ -162,9 +163,9 @@ convention used for its N-mm-MPa model.
 | `initial_x` | `[]` | Optional density field consistent with `initial_mi_map`; otherwise reconstructed from the material IDs. |
 | `layout_source` | `''` | Optional descriptive source string stored in `result.settings`. |
 
-These fields are solver inputs. The package does not include an Abaqus
-importer; the review reproduction package instead supplies declared saved
-numerical records and their rerun settings.
+These fields are solver inputs. The repository does not include an Abaqus
+importer. It supplies saved numerical records and documented settings for
+the verification experiments.
 
 ## Boundary Cases
 
@@ -202,5 +203,5 @@ Supported by `mbeso_fixed_solid`:
 `response.eta` and `response.eta_filtered` are optimization quantities. For
 reported material utilization, the plotting utility separately divides VM by
 the allowable stress of the actual material (`sigma_m1` for M1, `sigma_m2`
-for M2), and reports nonnegative maxima within each subset. Signed display
+for M2) and reports nonnegative maxima within each subset. Signed display
 values use +M1 and -M2. This reporting does not modify the update score.

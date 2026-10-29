@@ -1,7 +1,7 @@
 # Validation evidence
 
-This directory contains benchmark references, numerical verification experiments
-and the sources for Tables 8 and 9. Figure construction and numerical replay
+This directory contains benchmark references, numerical verification experiments,
+and the sources for Tables 8 and 9. Figure generation and numerical replay
 are described in [the reproduction guide](../docs/manuscript_reproduction.md).
 
 | Manuscript item | Entry point or evidence |
@@ -17,9 +17,9 @@ are described in [the reproduction guide](../docs/manuscript_reproduction.md).
 Experiment modes are invoked through
 `experiments/run_verification_experiments.m`. Saved-data replay does not rerun
 optimization. The instrumented engine performs fresh calculations and records
-the fields needed for figures and tables. Regression checks compare it with
-the production solvers on declared cases; it is not represented as identical
-production source.
+the fields needed for figures and tables. It is separate from the production
+source. Regression checks compare its results with those of the production
+solvers for the specified cases.
 
 ## Reported responses
 
@@ -27,7 +27,7 @@ The reported `C = 0.5 F^T U = 0.5 U^T K U` is strain energy for the stated
 linear elastic model. It is not the element-ranking score. Its relative
 change enters the stopping criterion.
 
-Utilization is evaluated inside the actually assigned material:
+Utilization is evaluated separately for elements assigned to each material:
 `100*VM/250 MPa` for M1 and `100*VM/50 MPa` for M2. Each maximum magnitude is
 nonnegative; a signed display uses positive M1 and negative M2. This quantity
 is distinct from the stress-state-based selection score. Final stress
@@ -40,16 +40,17 @@ comparisons use centroidal VM over all solid elements.
 | III(b) | 93 | 1675156216.16 | 2318 / 7922 | 137.414343 | 54.965737 | 33.674359 |
 
 `assigned_material_baselines.csv` contains unrounded data and provenance.
-`reference_results.csv` supplies the solver regression contract, including
-stress-sign-based utilization extrema. Those fields are not the
-assigned-material reporting metric; the latter is checked separately by
+`reference_results.csv` supplies the reference values for solver regression
+checks, including stress-sign-based utilization extrema. These fields differ
+from the assigned-material reporting metric, which is checked separately by
 `tests/test_assigned_material_utilization.m`.
 
 ## Interpretation and limits
 
-- Regression comparisons require exact discrete counts and a relative scalar
-  tolerance of `1e-8`. Differences due to sparse solves or platform changes
-  must be reported rather than replaced with reference values.
+- Regression comparisons require exact agreement in discrete counts and a
+  relative tolerance of `1e-8` for scalar values. Differences due to sparse
+  solves or platform changes must be reported rather than replaced with
+  reference values.
 - Table 9 uses each condition's own endpoint. Three variants reach the
   1,000-update cap and are not classified as converged.
 - Figure 7 transition totals use updates 1–214, including the initial-to-first
@@ -58,16 +59,16 @@ assigned-material reporting metric; the latter is checked separately by
   material and 5,200 solid–void events. Layout differences use state 214, with
   all 6,000 elements as the occupancy denominator and common solids as the
   material-assignment denominator. Deadband effects are nonmonotonic.
-- Update replay shares the FE input and therefore checks the update rules,
-  not FE accuracy independently. Small-model and frozen-layout checks do not
-  establish accuracy at every intermediate state. The recorded intermediate
-  bridge criterion exceedances and bridge-to-reference compliance differences
-  are not claimed to be resolved by these checks.
+- Update replay uses the same FE input as the instrumented solver. It checks
+  the update rules but does not independently assess FE accuracy. Small-model
+  and frozen-layout checks do not establish accuracy at every intermediate
+  state. The recorded intermediate bridge criterion exceedances and compliance
+  differences from the bridge reference values remain unresolved by these checks.
 
 ## Mesh and external FE comparisons
 
 The 40 × 40 mm evaluation regions are used only for Section 3.2. They modify
-the extrema evaluation set, not the mesh, loads or optimization, and do not
+the extrema evaluation set, not the mesh, loads, or optimization, and do not
 establish removal of all singularity effects. On the 50 × 30, 100 × 60 and
 200 × 120 meshes, each designated region covers 2 × 2, 4 × 4 and 8 × 8
 elements, respectively. The code records the represented physical size.
@@ -77,8 +78,8 @@ Rounded agreement cannot establish an error bound below the rounding
 resolution, and a fixed-layout FE comparison does not verify the optimization
 update algorithm by itself.
 
-The supplied MATLAB checks use R2024b on Windows and base MATLAB. No native
-execution in R2023a is claimed. Compact figure and endpoint MAT records are
-tracked; fresh full histories and FE arrays belong under ignored `results/`
-directories. Reference-author source code and complete original element maps
-are not available in this repository.
+The supplied checks were run in MATLAB R2024b on Windows using base MATLAB.
+Native execution in R2023a has not been verified. Compact figure and endpoint
+MAT records are tracked; fresh full histories and FE arrays belong under ignored
+`results/` directories. The reference authors' source code and complete original
+element maps are not available in this repository.

@@ -1,12 +1,12 @@
 # Manuscript figure sources
 
 [figure_sources.pptx](figure_sources.pptx) contains the editable composition
-of Figures 1-7: panel labels, connectors, callouts, schematics and assembled
+of Figures 1-7: panel labels, connectors, callouts, schematics, and assembled
 numerical graphs. Its eighteen slides correspond to the manuscript panels.
 [source_manifest.json](source_manifest.json) identifies the presentation
 and numerical input records.
 
-The MATLAB scripts reproduce numerical curves, bars, axes and legends from
+The MATLAB scripts reproduce numerical curves, bars, axes, and legends from
 the recorded data. They export FIG, PNG, PDF and Windows EMF to
 `reproduction/outputs/`. Manual annotations and slide composition remain
 editable in the PowerPoint source.
@@ -26,11 +26,11 @@ editable in the PowerPoint source.
 | 7(e) | Layout differences at iteration 214 | [PNG](reproduced/Fig07_e.png) |
 
 The all-figures command exports the ten numerical graphs, including two
-zooms. Figure 6(b) also has an individual native script; it reproduces the
-material records but does not duplicate the manually assembled composition
-pixel for pixel. Full-history axes extend to 250 and zoom axes to 215;
+zooms. Figure 6(b) also has a separate MATLAB script that reproduces the
+material records. Its layout may differ from the manually assembled
+PowerPoint composition. Full-history axes extend to 250 and zoom axes to 215;
 the data end at 214.
 
 See the [manuscript guide](../../manuscript_reproduction.md) for individual
 scripts and numerical definitions, and the
-[reproduction workflow](../../reproducibility.md) for fresh calculations.
+[reproduction workflow](../../reproducibility.md) for new calculations.

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "upload_type": "software",
   "language": "eng",
-  "description": "An open MATLAB implementation of stress-state-based multi-material bi-directional evolutionary structural optimization for two-dimensional problems, with retained-solid regions, line loads and self-weight. The repository contains compact solvers, teaching comments, an equation-to-code map, numerical records, editable manuscript figure and table generators, and verification experiments for sensitivity and material-assignment histories. The documentation states the scope and limitations of the numerical comparisons.",
+  "description": "MBESO2D is an open MATLAB implementation of stress-state-based multi-material bi-directional evolutionary structural optimization for two-dimensional continua. It supports retained-solid regions, line loads, and self-weight. The repository includes compact solvers, explanatory comments, an equation-to-code map, numerical records, scripts for reproducing manuscript figures and tables, and verification experiments for sensitivity and material-assignment histories. The documentation defines the scope and limitations of the numerical comparisons.",
   "creators": [
     {
       "name": "Kim, Hongin",
