@@ -6,6 +6,7 @@ function summary = run_mesh_independence()
 repo_root = fileparts(fileparts(mfilename('fullpath')));
 addpath(fullfile(repo_root, 'src'));
 addpath(fullfile(repo_root, 'validation'));
+addpath(fullfile(repo_root, 'visualization'));
 
 mesh_sizes = [50 30; 100 60; 200 120];
 iteration_limit = 214;
@@ -13,7 +14,8 @@ materials = struct( ...
     'E1', 200000, 'nu1', 0.3, 'sigma_m1', 250, ...
     'E2', 20000, 'nu2', 0.3, 'sigma_m2', 50, 'nu3', 0.3);
 
-rows = cell(size(mesh_sizes, 1), 11);
+rows = cell(size(mesh_sizes, 1), 15);
+mesh_results = cell(size(mesh_sizes, 1), 1);
 for k = 1:size(mesh_sizes, 1)
     nelx = mesh_sizes(k, 1);
     nely = mesh_sizes(k, 2);
@@ -35,13 +37,37 @@ for k = 1:size(mesh_sizes, 1)
     rows(k, :) = {nelx, nely, result.iterations, result.compliance, runtime_seconds, ...
         m1_fraction, m2_fraction, metrics40.vm_max_full_MPa, ...
         metrics40.vm_max_regular_MPa, metrics40.actual_size_mm, ...
-        result.converged};
+        result.converged, metrics40.assigned_m1_max_full_percent, ...
+        metrics40.assigned_m2_max_full_percent, ...
+        metrics40.assigned_m1_max_regular_percent, metrics40.assigned_m2_max_regular_percent};
+    mesh_results{k} = result;
 end
 
 summary = cell2table(rows, 'VariableNames', { ...
     'nelx', 'nely', 'iterations', 'compliance_N_mm', 'runtime_s', ...
     'tension_fraction', 'compression_fraction', 'vm_max_full_MPa', ...
     'vm_max_excluding_40mm_MPa', 'actual_40mm_patch_size_mm', ...
-    'converged'});
+    'converged', 'assigned_m1_max_full_percent', 'assigned_m2_max_full_percent', ...
+    'assigned_m1_max_excluding_40mm_percent', 'assigned_m2_max_excluding_40mm_percent'});
+[utilization_figure, utilization_summary] = mbeso_plot_cantilever_mesh_utilization(mesh_results, 40);
+material_layout_figure = mbeso_plot_cantilever_mesh_material_layouts(mesh_results);
+output_dir = fullfile(repo_root, 'results', 'mesh_consistency');
+if ~isfolder(output_dir), mkdir(output_dir); end
+writetable(summary, fullfile(output_dir, 'mesh_summary.csv'));
+writetable(utilization_summary, fullfile(output_dir, 'assigned_utilization_40mm.csv'));
+save(fullfile(output_dir, 'mesh_results.mat'), 'mesh_results', 'summary', '-v7.3');
+savefig(utilization_figure, fullfile(output_dir, 'assigned_utilization_40mm.fig'));
+savefig(material_layout_figure, fullfile(output_dir, 'material_layouts.fig'));
+if exist('exportgraphics', 'file')
+    exportgraphics(utilization_figure, fullfile(output_dir, 'assigned_utilization_40mm.png'), 'Resolution', 300);
+    exportgraphics(utilization_figure, fullfile(output_dir, 'assigned_utilization_40mm.pdf'), 'ContentType', 'vector');
+    exportgraphics(material_layout_figure, fullfile(output_dir, 'material_layouts.png'), 'Resolution', 300);
+    exportgraphics(material_layout_figure, fullfile(output_dir, 'material_layouts.pdf'), 'ContentType', 'vector');
+else
+    print(utilization_figure, fullfile(output_dir, 'assigned_utilization_40mm.png'), '-dpng', '-r300');
+    print(utilization_figure, fullfile(output_dir, 'assigned_utilization_40mm.pdf'), '-dpdf', '-painters');
+    print(material_layout_figure, fullfile(output_dir, 'material_layouts.png'), '-dpng', '-r300');
+    print(material_layout_figure, fullfile(output_dir, 'material_layouts.pdf'), '-dpdf', '-painters');
+end
 disp(summary);
 end

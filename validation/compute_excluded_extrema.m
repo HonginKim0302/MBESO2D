@@ -5,6 +5,9 @@ function metrics = compute_excluded_extrema(result, exclusion_size_mm)
 %
 % The exclusion affects post-processing only. No element is removed from the
 % finite-element analysis or optimization.
+% assigned_m1/m2_* are nonnegative maxima within ACTUAL material sets.
+% signed_eta_* fields remain legacy stress-state-based optimizer diagnostics;
+% their original definitions are retained for archived regression baselines.
 
 if nargin ~= 2 || ~isstruct(result) || ~isfield(result, 'x')
     error('Usage: metrics = compute_excluded_extrema(result, exclusion_size_mm)');
@@ -52,6 +55,7 @@ sigma_state = result.response.sigma_e;
 
 signed_eta = eta;
 signed_eta(sigma_state < 0) = -signed_eta(sigma_state < 0);
+utilization = mbeso_assigned_material_utilization(result);
 
 metrics = struct( ...
     'bc_case', bc_case, ...
@@ -66,6 +70,12 @@ metrics = struct( ...
     'signed_eta_tension_max_regular_percent', 100 * masked_max(signed_eta, regular_mask & signed_eta >= 0), ...
     'signed_eta_compression_min_full_percent', 100 * masked_min(signed_eta, solid_mask & signed_eta < 0), ...
     'signed_eta_compression_min_regular_percent', 100 * masked_min(signed_eta, regular_mask & signed_eta < 0));
+metrics.assigned_m1_max_full_percent = masked_max(utilization.percent, utilization.tensile_mask);
+metrics.assigned_m2_max_full_percent = masked_max(utilization.percent, utilization.compressive_mask);
+metrics.assigned_m1_max_regular_percent = masked_max(utilization.percent, regular_mask & utilization.tensile_mask);
+metrics.assigned_m2_max_regular_percent = masked_max(utilization.percent, regular_mask & utilization.compressive_mask);
+metrics.assigned_utilization_definition = utilization.definition;
+metrics.legacy_eta_definition = 'Stored optimization eta grouped by raw stress-state sign; not assigned-material utilization.';
 end
 
 function value = masked_max(field, mask)

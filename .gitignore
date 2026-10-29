@@ -9,6 +9,23 @@
 *.mat
 *.fig
 
+# Compact, intentional manuscript replay inputs (not newly generated results)
+!reproduction/figure_06/data/plot_inputs.mat
+!reproduction/figure_08/data/plot_inputs.mat
+!reproduction/figure_09/data/plot_inputs_214.mat
+!reproduction/figure_09/data/source_states_0_214.mat
+!validation/manuscript_tables/data/tables_input.mat
+
+# Native figure exports are regenerated; preserve tracked inputs and check CSVs
+reproduction/figure_06/figures/
+reproduction/figure_08/exports/
+reproduction/figure_09/figures/
+reproduction/figure_09/panels/
+reproduction/figure_09/exports/
+reproduction/outputs/
+reproduction/submission_20261029/outputs/
+reproduction/submission_20261029/generated_inputs/
+
 # Generated outputs
 results/*
 !results/.gitkeep

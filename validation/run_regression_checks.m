@@ -2,6 +2,10 @@
 % Copyright (C) 2026 MBESO2D contributors
 function summary = run_regression_checks()
 %RUN_REGRESSION_CHECKS Execute and compare the three public examples.
+% tension_eta/compression_eta preserve archived optimizer-score definitions
+% grouped by raw stress sign. Assigned-material contour utilization is tested
+% separately in tests/test_assigned_material_utilization.m; do not substitute
+% it into these historical regression reference columns.
 
 repo_root = fileparts(fileparts(mfilename('fullpath')));
 addpath(fullfile(repo_root, 'src'));

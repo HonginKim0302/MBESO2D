@@ -8,6 +8,7 @@ function fig = mbeso_plot_beso_evolution(result)
 % The input result is the structure returned by mbeso.
 
 history = result.history;
+palette = mbeso_material_palette();
 Vk_hist = history.Vk_hist(:).';
 nk_hist = history.nk_hist(:).';
 V1_hist = history.V1_hist(:).';
@@ -35,7 +36,7 @@ p1 = plot(ax, iterations, Vk_hist, '-ok', ...
     'MarkerFaceColor', 'w', 'MarkerSize', 6, 'LineWidth', 1, 'DisplayName', 'V_k');
 p2 = plot(ax, iterations, nk_hist, '-sk', ...
     'MarkerFaceColor', 'w', 'MarkerSize', 6, 'LineWidth', 1, 'DisplayName', 'n_k');
-p3 = plot(ax, iterations, V1_hist, '-dk', ...
+p3 = plot(ax, iterations, V1_hist, '-d', 'Color', palette.tensile, ...
     'MarkerFaceColor', 'w', 'MarkerSize', 6, 'LineWidth', 1, 'DisplayName', 'V_1');
 ylabel(ax, 'V_k / n_k / V_1', 'FontName', 'Times New Roman');
 set(ax, 'YColor', 'k');

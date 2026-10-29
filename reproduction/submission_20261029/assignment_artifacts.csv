@@ -1,0 +1,5 @@
+panel,format,path,width_px,height_px,source_mode
+Fig06_b,fig,outputs\Fig06_b.fig,560,400,recorded_submission
+Fig06_b,png,outputs\Fig06_b.png,560,400,recorded_submission
+Fig06_b,pdf,outputs\Fig06_b.pdf,560,400,recorded_submission
+Fig06_b,emf,outputs\Fig06_b.emf,560,400,recorded_submission

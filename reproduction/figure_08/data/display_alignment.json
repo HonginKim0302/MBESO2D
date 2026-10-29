@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "checks": 84,
+  "representative_decisions_checked": 20,
+  "input_states": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "plotted_updates": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "panels_b_c_xlabel": "Iteration",
+  "all_stored_input_arrays_unchanged": true,
+  "stored_extra_update11_preserved_but_not_plotted": true,
+  "panels_a_e_unchanged": true,
+  "solver_or_FE_executed": false,
+  "variants_passed": true
+}

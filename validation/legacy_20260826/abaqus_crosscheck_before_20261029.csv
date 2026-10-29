@@ -1,0 +1,9 @@
+benchmark,physical_case,response,location,mbeso2d_value,abaqus_value,unit,reported_relative_difference,verification_status
+run_cantilever,short_cantilever,maximum_centroidal_von_mises,solid_element_centroids,128.91,128.91,MPa,<0.0000%,final_manuscript_fixed_layout_crosscheck
+run_cantilever,short_cantilever,ux_selected_node,lower_right_loading_node,-0.55,-0.55,mm,<0.0000%,final_manuscript_fixed_layout_crosscheck
+run_cantilever,short_cantilever,uy_selected_node,lower_right_loading_node,-1.15,-1.15,mm,<0.0000%,final_manuscript_fixed_layout_crosscheck
+run_cantilever,short_cantilever,compliance,full_fixed_layout,574.78,574.78,N_mm,<0.0000%,final_manuscript_fixed_layout_crosscheck
+run_case_3b,upper_retained_deck,maximum_centroidal_von_mises,solid_element_centroids,137.41,137.41,MPa,<0.0000%,final_manuscript_fixed_layout_crosscheck
+run_case_3b,upper_retained_deck,ux_selected_node,lower_right_node_of_rightmost_bottom_solid,-20.73,-20.73,mm,<0.0000%,final_manuscript_fixed_layout_crosscheck
+run_case_3b,upper_retained_deck,uy_selected_node,lower_right_node_of_rightmost_bottom_solid,-36.82,-36.82,mm,<0.0000%,final_manuscript_fixed_layout_crosscheck
+run_case_3b,upper_retained_deck,compliance,full_fixed_layout,1.68e6,1.68e6,kN_mm,<0.0000%,final_manuscript_fixed_layout_crosscheck

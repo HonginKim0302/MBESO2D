@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "upload_type": "software",
   "language": "eng",
-  "description": "A reproducible MATLAB implementation of stress-state-based multi-material bi-directional evolutionary structural optimization for two-dimensional problems, including retained-solid regions, line loads, self-weight, validation scripts, and benchmark examples.",
+  "description": "An open MATLAB implementation of stress-state-based multi-material bi-directional evolutionary structural optimization for two-dimensional problems, with retained-solid regions, line loads and self-weight. The revised-manuscript package adds brief teaching comments, an equation-to-code map, compact numerical data and editable MATLAB figure/table reproduction, plus separate scripts for fresh sensitivity, continuation and deadband-history experiments. These checks document the tested implementation and its limitations; they do not establish complete reproduction of the reference publication.",
   "creators": [
     {
       "name": "Kim, Hongin",

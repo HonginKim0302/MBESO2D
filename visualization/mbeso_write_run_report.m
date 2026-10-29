@@ -212,10 +212,16 @@ end
 solid_mask = get_solid_mask(result);
 fprintf(fid, 'Max von Mises stress (full solid domain): %s\n', ...
     value_to_string(masked_response_max(response, 'sigvm', solid_mask)));
-fprintf(fid, 'Max raw utilization (full solid domain): %s\n', ...
+fprintf(fid, 'Optimization metric: max raw eta (full solid domain, ratio): %s\n', ...
     value_to_string(masked_response_max(response, 'eta', solid_mask)));
-fprintf(fid, 'Max filtered utilization (full solid domain): %s\n', ...
+fprintf(fid, 'Optimization metric: max filtered eta (full solid domain, ratio): %s\n', ...
     value_to_string(masked_response_max(response, 'eta_filtered', solid_mask)));
+utilization = mbeso_assigned_material_utilization(result);
+fprintf(fid, 'Assigned-material utilization definition: %s\n', utilization.definition);
+fprintf(fid, 'Max assigned M1 utilization (full M1 solid domain, positive percent): %s\n', ...
+    assigned_maximum_to_string(utilization.tensile_max_percent));
+fprintf(fid, 'Max assigned M2 utilization (full M2 solid domain, positive percent): %s\n', ...
+    assigned_maximum_to_string(utilization.compressive_max_percent));
 write_optional_response_scalar(fid, response, 'compliance_N_m', 'Compliance (N*m)');
 write_optional_response_scalar(fid, response, 'material1_max_sigvm', 'Max von Mises stress, material 1 (MPa)');
 write_optional_response_scalar(fid, response, 'material2_max_sigvm', 'Max von Mises stress, material 2 (MPa)');
@@ -224,6 +230,14 @@ write_optional_response_scalar(fid, response, 'max_displacement', 'Maximum displ
 write_optional_response_scalar(fid, response, 'total_mass_kg', 'Total solid mass (kg)');
 write_optional_response_scalar(fid, response, 'external_vertical_load_N', 'External vertical load (N)');
 write_optional_response_scalar(fid, response, 'self_weight_N', 'Self-weight (N)');
+end
+
+function text = assigned_maximum_to_string(value)
+if isnan(value)
+    text = 'not_applicable (material absent)';
+else
+    text = value_to_string(value);
+end
 end
 
 function write_optional_response_scalar(fid, response, field_name, label)

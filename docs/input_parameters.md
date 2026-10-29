@@ -30,10 +30,10 @@ result = mbeso_fixed_solid(nelx, nely, volfrac, er, options)
 | `bc_load` | `1000` | Load magnitude. |
 | `tension_eta_mode` | `'with_nk'` | Tension utilization rule; also accepts `'without_nk'`. |
 | `penal` | `3.0` | Density penalization exponent. |
-| `tau` | solver-specific | Relative objective-function change tolerance. |
+| `tau` | `1e-3` (both solvers) | Relative strain-energy response-change tolerance; the manuscript cantilever example sets `1e-5`. |
 | `xmin` | `1e-3` | Minimum density for void elements. |
 | `r1_mm` | solver-specific | Filter radius for stress-state field. |
-| `r2_mm` | solver-specific | Filter radius for utilization field. |
+| `r2_mm` | `30` (both solvers) | Filter radius for the internal utilization selection score. |
 | `structure_width` | `1000` | Physical width. |
 | `structure_height` | `600` | Physical height. |
 | `structure_dimension_unit` | `'mm'` | Unit for physical dimensions: `'mm'`, `'cm'`, or `'m'`. |
@@ -51,7 +51,18 @@ The physical element size is resolved from `structure_width / nelx` and `structu
 | Both solvers | `max_iterations` | `1000` | Safety stop. Alias: `iteration_limit`. |
 | `mbeso` | `force_iteration_limit` | `false` | If true, continue to `max_iterations` even after the normal convergence condition is met. |
 
-For both solvers, `result.converged` is true only when the target volume has been reached and `change <= tau`. Reaching `max_iterations` records `termination_reason = 'max_iterations'`.
+For both solvers, `result.converged` requires the actual solid fraction to be
+at most `volfrac + 1/N` and `change <= tau`; the response test starts after
+the first ten updates. This flag does not require a stationary topology or
+material assignment. Reaching the cap without convergence records
+`termination_reason = 'max_iterations'`. The standard solver's forced-budget
+mode records `'fixed_iteration_limit'`. `max_iter` is not an accepted option
+name; use `max_iterations` or its alias `iteration_limit`.
+
+The public baseline has no material-classification deadband. Deadband,
+alternative recovery and other sensitivity choices are explicit options of
+the separate review reproduction engine, not silently added defaults of
+these two public solver entry points.
 
 ## Output Options
 
@@ -81,7 +92,9 @@ results/mbeso_fixed_solid_result_YYYYMMDD_HHMMSS.mat
 | `fixed_solid_mask` | all false | Logical mask for elements that remain solid. Alias: `fixedSolidMask`. |
 | `non_design_mask` | all false, plus elements outside `designMask` | Logical forced-void mask. Aliases: `nonDesignMask`, `non_design_domain_mask`. |
 
-`non_design_mask` must not overlap `fixed_solid_mask`. The resolved non-design mask is stored in `result.settings.non_design_mask`.
+`non_design_mask` must not overlap `fixed_solid_mask`. The resolved non-design
+mask is stored in `result.settings.non_design_mask`. Retained solids count
+towards the whole-domain volume target and can change material identity.
 
 ## Material Properties and Units
 
@@ -149,8 +162,9 @@ convention used for its N-mm-MPa model.
 | `initial_x` | `[]` | Optional density field consistent with `initial_mi_map`; otherwise reconstructed from the material IDs. |
 | `layout_source` | `''` | Optional descriptive source string stored in `result.settings`. |
 
-These fields are solver inputs only; the public release does not bundle an
-Abaqus importer or a manuscript-layout reconstruction utility.
+These fields are solver inputs. The package does not include an Abaqus
+importer; the review reproduction package instead supplies declared saved
+numerical records and their rerun settings.
 
 ## Boundary Cases
 
@@ -176,11 +190,17 @@ Supported by `mbeso_fixed_solid`:
 | `result.mi_map` | Final material map: `0` void, `1` material 1, `2` material 2. |
 | `result.history` | Iteration histories. |
 | `result.iterations` | Number of completed iterations. |
-| `result.compliance` | Final objective function value. |
-| `result.response` | Final displacement, stress, utilization, and objective function fields. |
+| `result.compliance` | Final strain energy `0.5*F'*U` in N*mm; a response/stopping metric. |
+| `result.response` | Final displacement, stress, internal selection-score, and strain-energy fields. |
 | `result.materials` | Material properties. |
 | `result.settings` | Resolved settings and masks. |
-| `result.converged` | Convergence flag. |
+| `result.converged` | Response/volume stopping flag, not a layout-stationarity flag. |
 | `result.termination_reason` | Termination reason. |
 | `result.report_file` | Text report path, if written. |
 | `result.result_file` | MAT-file path, if saved. |
+
+`response.eta` and `response.eta_filtered` are optimization quantities. For
+reported material utilization, the plotting utility separately divides VM by
+the allowable stress of the actual material (`sigma_m1` for M1, `sigma_m2`
+for M2), and reports nonnegative maxima within each subset. Signed display
+values use +M1 and -M2. This reporting does not modify the update score.

@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "saved_array_checks": 18,
+  "actual_response_states": 215,
+  "actual_local_FE_states": 11,
+  "actual_decision_updates": 11,
+  "material_phase_state": 10,
+  "no_FE_or_optimization_executed": true
+}

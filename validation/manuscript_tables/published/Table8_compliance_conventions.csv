@@ -1,0 +1,4 @@
+case_label,unit,reference_C,C_half_FtU,twice_C_FtU,difference_C_percent,difference_twice_C_percent,reference_interpretation
+"I(b)","N mm",614.15999999999997,574.78360604352338,1149.5672120870468,-6.4114227491983478,87.177154501603297,"Reported value; same C convention assumed for comparison"
+"III(a)","MN m",7.8200000000000003,2.5521538261974213,5.1043076523948425,-67.363761813332218,-34.727523626664421,"Reference bridge unit interpreted as N m; convention unconfirmed"
+"III(b)","MN m",5,1.6751562161576339,3.3503124323152678,-66.496875676847324,-32.993751353694648,"Reference bridge unit interpreted as N m; convention unconfirmed"

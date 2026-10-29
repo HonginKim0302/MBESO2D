@@ -1,0 +1,37 @@
+{
+  "passed": true,
+  "checks": 20,
+  "table8_rows": 3,
+  "table10_rows": 17,
+  "original_table10_rows_preserved": 14,
+  "added_epsilon_MPa": [
+    0.05,
+    0.5,
+    5
+  ],
+  "first_stop_updates": [
+    153,
+    216,
+    133
+  ],
+  "archive_path_tested": true,
+  "recorded_history_path_tested": true,
+  "fresh_endpoint_path_tested": true,
+  "fresh_endpoint_inputs": "Existing16 fresh endpoints plus three newly rerun EPS endpoints",
+  "numerical_solver_modified": false,
+  "matlab_version": "24.2.0.3070828 (R2024b) Update 7",
+  "relocated_archive_replay_passed": true,
+  "public_solver_integrity": [
+    {
+      "file": "src\\mbeso.m",
+      "sha256": "e288674602af4773880008f8accc3b3ec96775a3d20bd172e30a383205064639",
+      "unchanged": true
+    },
+    {
+      "file": "src\\mbeso_fixed_solid.m",
+      "sha256": "1f0c968bcc94ce72b48c1b333ff3399700db0174c876f55871e97eed12eed56e",
+      "unchanged": true
+    }
+  ],
+  "scope": "Updated only the dated release folder; three EPS paths and baseline rerun, earlier other experiments reused for table checks."
+}

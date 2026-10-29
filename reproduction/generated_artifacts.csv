@@ -1,0 +1,16 @@
+manuscript_figure,panel,numeric_panel,fig,png,pdf,emf,renderer_source
+6,c,1,outputs/Fig06_panel_c.fig,outputs/Fig06_panel_c.png,outputs/Fig06_panel_c.pdf,outputs/Fig06_panel_c.emf,figure_06/figures/Figure4_panel_c
+6,d,1,outputs/Fig06_panel_d.fig,outputs/Fig06_panel_d.png,outputs/Fig06_panel_d.pdf,outputs/Fig06_panel_d.emf,figure_06/figures/Figure4_panel_d
+8,a,1,outputs/Fig08_panel_a.fig,outputs/Fig08_panel_a.png,outputs/Fig08_panel_a.pdf,outputs/Fig08_panel_a.emf,figure_08/exports/figure1_panel_a
+8,b,1,outputs/Fig08_panel_b.fig,outputs/Fig08_panel_b.png,outputs/Fig08_panel_b.pdf,outputs/Fig08_panel_b.emf,figure_08/exports/no_highlights/figure1_panel_b_no_highlights
+8,c,1,outputs/Fig08_panel_c.fig,outputs/Fig08_panel_c.png,outputs/Fig08_panel_c.pdf,outputs/Fig08_panel_c.emf,figure_08/exports/no_highlights/figure1_panel_c_no_highlights
+9,b,1,outputs/Fig09_panel_b.fig,outputs/Fig09_panel_b.png,outputs/Fig09_panel_b.pdf,outputs/Fig09_panel_b.emf,figure_09/panels/Figure3b
+9,c,1,outputs/Fig09_panel_c.fig,outputs/Fig09_panel_c.png,outputs/Fig09_panel_c.pdf,outputs/Fig09_panel_c.emf,figure_09/panels/Figure3c
+9,d,1,outputs/Fig09_panel_d.fig,outputs/Fig09_panel_d.png,outputs/Fig09_panel_d.pdf,outputs/Fig09_panel_d.emf,figure_09/panels/Figure3e
+9,e,1,outputs/Fig09_panel_e.fig,outputs/Fig09_panel_e.png,outputs/Fig09_panel_e.pdf,outputs/Fig09_panel_e.emf,figure_09/exports/Fig09e
+9,f_1,1,outputs/Fig09_panel_f_1.fig,outputs/Fig09_panel_f_1.png,outputs/Fig09_panel_f_1.pdf,outputs/Fig09_panel_f_1.emf,figure_09/exports/Fig09f_1
+9,f_2,1,outputs/Fig09_panel_f_2.fig,outputs/Fig09_panel_f_2.png,outputs/Fig09_panel_f_2.pdf,outputs/Fig09_panel_f_2.emf,figure_09/exports/Fig09f_2
+8,d,0,outputs/optional/Fig08_panel_d.fig,outputs/optional/Fig08_panel_d.png,outputs/optional/Fig08_panel_d.pdf,outputs/optional/Fig08_panel_d.emf,figure_08/exports/Fig08_panel_d
+8,e,0,outputs/optional/Fig08_panel_e.fig,outputs/optional/Fig08_panel_e.png,outputs/optional/Fig08_panel_e.pdf,outputs/optional/Fig08_panel_e.emf,figure_08/exports/figure1_panel_e
+8,b_highlights,0,outputs/optional/Fig08_panel_b_highlights.fig,outputs/optional/Fig08_panel_b_highlights.png,outputs/optional/Fig08_panel_b_highlights.pdf,outputs/optional/Fig08_panel_b_highlights.emf,figure_08/exports/figure1_panel_b
+8,c_highlights,0,outputs/optional/Fig08_panel_c_highlights.fig,outputs/optional/Fig08_panel_c_highlights.png,outputs/optional/Fig08_panel_c_highlights.pdf,outputs/optional/Fig08_panel_c_highlights.emf,figure_08/exports/figure1_panel_c

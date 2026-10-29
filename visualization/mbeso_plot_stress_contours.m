@@ -8,16 +8,17 @@ function fig = mbeso_plot_stress_contours(result)
 % The input result is the structure returned by mbeso.
 
 response = require_response(result);
-x = result.x;
-solid_mask = x > result.settings.xmin;
+utilization = mbeso_assigned_material_utilization(result);
+solid_mask = utilization.solid_mask;
 
 sigvm = mask_void(response.sigvm, solid_mask);
 sigma_e = mask_void(response.sigma_e, solid_mask);
-eta_percent = mask_void(get_utilization_field(response), solid_mask) * 100;
-[eta_plot, eta_signed_percent, eta_ticks, eta_tick_labels] = ...
-    signed_utilization_plot(eta_percent, sigma_e);
-stress_sum_title = 'Principal stress sum \sigma_1 + \sigma_2';
+utilization_scale = mbeso_zero_centered_scale(utilization.signed_percent);
+stress_sum_title = {'Principal stress sum', ...
+    '\sigma_{e,i} = \sigma_{I,i} + \sigma_{II,i}'};
 stress_sum_cbar = 'MPa';
+utilization_title = {'Assigned-material utilization', ...
+    '+: Tensile material region', '-: Compressive material region'};
 
 fig = figure('Color', 'w', 'Name', 'MBESO stress contours', 'NumberTitle', 'off');
 set(fig, 'Units', 'pixels', 'Position', [100 100 1250 330]);
@@ -26,9 +27,15 @@ tiledlayout(fig, 1, 3, 'Padding', 'compact', 'TileSpacing', 'compact');
 
 plot_field(nexttile, sigvm, 'von Mises stress', 'von Mises stress (MPa)', ...
     jet(256), [], [], [], [], [], sigvm, 'von Mises stress', 'MPa', false);
-plot_field(nexttile, eta_plot, 'Unfiltered signed material utilization', '(%)', ...
-    redblue_map(256), eta_ticks, eta_tick_labels, [], [], [], ...
-    eta_signed_percent, 'Unfiltered signed material utilization', '%', true);
+utilization_image = plot_field(nexttile, utilization_scale.display_values, ...
+    utilization_title, 'Signed utilization (%)', ...
+    utilization_scale.colormap, utilization_scale.ticks, utilization_scale.tick_labels, [], [], [], ...
+    utilization.signed_percent, 'Signed assigned-material utilization', '%', false);
+utilization_data = getappdata(utilization_image, 'MBESO_ElementDatatipData');
+utilization_data.material_map = utilization.material_map;
+utilization_data.utilization_percent = utilization.percent;
+setappdata(utilization_image, 'MBESO_ElementDatatipData', utilization_data);
+setappdata(utilization_image, 'MBESO_ColorScale', utilization_scale);
 plot_field(nexttile, sigma_e, stress_sum_title, stress_sum_cbar, ...
     signed_redblue_map(sigma_e, 256), [], [], [], [], [], ...
     sigma_e, 'Principal stress sum', 'MPa', true);
@@ -42,39 +49,12 @@ end
 response = result.response;
 end
 
-function eta = get_utilization_field(response)
-if isfield(response, 'eta') && ~isempty(response.eta)
-    eta = response.eta;
-else
-    eta = response.eta_filtered;
-end
-end
-
-function [eta_plot, eta_signed_percent, ticks, tick_labels] = signed_utilization_plot(eta_percent, sigma_e)
-eta_plot = NaN(size(eta_percent));
-eta_signed_percent = NaN(size(eta_percent));
-tension = isfinite(eta_percent) & isfinite(sigma_e) & sigma_e >= 0;
-compression = isfinite(eta_percent) & isfinite(sigma_e) & sigma_e < 0;
-tension_max = max_or_zero(abs(eta_percent(tension)));
-compression_max = max_or_zero(abs(eta_percent(compression)));
-eta_signed_percent(tension) = abs(eta_percent(tension));
-eta_signed_percent(compression) = -abs(eta_percent(compression));
-if tension_max > 0, eta_plot(tension) = abs(eta_percent(tension)) / tension_max; else, eta_plot(tension) = 0; end
-if compression_max > 0, eta_plot(compression) = -abs(eta_percent(compression)) / compression_max; else, eta_plot(compression) = 0; end
-ticks = [-1 -0.5 0 0.5 1];
-tick_labels = {sprintf('-%.4g', compression_max), sprintf('-%.4g', compression_max/2), '0', sprintf('%.4g', tension_max/2), sprintf('%.4g', tension_max)};
-end
-
-function value = max_or_zero(values)
-if isempty(values), value = 0; else, value = max(values); end
-end
-
 function field_out = mask_void(field_in, solid_mask)
 field_out = field_in;
 field_out(~solid_mask) = NaN;
 end
 
-function plot_field(ax, field_value, title_text, cbar_text, cmap, cbar_ticks, cbar_tick_labels, ...
+function img = plot_field(ax, field_value, title_text, cbar_text, cmap, cbar_ticks, cbar_tick_labels, ...
         x_label, y_label, reverse_y, datatip_value, datatip_name, datatip_unit, show_stress_state)
 if nargin < 8 || isempty(x_label), x_label = 'Element x'; end
 if nargin < 9 || isempty(y_label), y_label = 'Element y'; end
@@ -110,6 +90,15 @@ if ~isempty(valid_value)
 end
 if ~isempty(cbar_ticks)
     set(ax, 'CLim', [min(cbar_ticks) max(cbar_ticks)]);
+end
+if show_stress_state
+    scale = mbeso_zero_centered_scale(field_value, [], 7);
+    set(img, 'CData', scale.display_values);
+    setappdata(img, 'MBESO_ColorScale', scale);
+    set(ax, 'CLim', scale.color_limits);
+    colormap(ax, scale.colormap);
+    cbar_ticks = scale.ticks;
+    cbar_tick_labels = scale.tick_labels;
 end
 cb = colorbar(ax);
 set(cb, 'FontName', 'Times New Roman', 'FontSize', 10);
@@ -157,6 +146,10 @@ value = data.values(element_y, element_x);
 text_rows = { ...
     sprintf('%s: %d', data.x_label, element_x), ...
     sprintf('%s: %d', data.y_label, element_y)};
+if isfield(data, 'material_map')
+    material_id = data.material_map(element_y, element_x);
+    text_rows{end + 1} = sprintf('Assigned material ID: %d', material_id);
+end
 if ~isfinite(value)
     text_rows{end + 1} = 'Value: void element';
     return;
@@ -166,6 +159,10 @@ if isempty(data.unit)
     text_rows{end + 1} = sprintf('%s: %.9g', data.quantity, value);
 else
     text_rows{end + 1} = sprintf('%s: %.9g %s', data.quantity, value, data.unit);
+end
+if isfield(data, 'utilization_percent')
+    text_rows{end + 1} = sprintf('Assigned-material utilization magnitude: %.9g %%', ...
+        data.utilization_percent(element_y, element_x));
 end
 if data.show_stress_state
     if value > 0
@@ -207,40 +204,8 @@ set(fig, 'DefaultAxesFontName', 'Times New Roman', 'DefaultTextFontName', 'Times
 end
 
 
-function cmap = redblue_map(n)
-half = floor(n / 2);
-red_to_white = [ones(half, 1), linspace(0, 1, half)', linspace(0, 1, half)'];
-white_to_blue = [linspace(1, 0, n - half)', linspace(1, 0, n - half)', ones(n - half, 1)];
-cmap = [red_to_white; white_to_blue];
-end
-
-function cmap = signed_redblue_map(field_value, n)
-% Keep zero white while using the actual, generally asymmetric data limits.
-n = max(2, round(n));
-valid_value = field_value(isfinite(field_value));
-if isempty(valid_value)
-    cmap = redblue_map(n);
-    return;
-end
-
-data_min = min(valid_value);
-data_max = max(valid_value);
-if data_max == data_min
-    cmap = repmat([1, 1, 1], n, 1);
-elseif data_min < 0 && data_max > 0
-    zero_fraction = -data_min / (data_max - data_min);
-    zero_index = 1 + round(zero_fraction * (n - 1));
-    zero_index = min(max(zero_index, 2), n - 1);
-    negative_count = zero_index;
-    positive_count = n - zero_index + 1;
-    red_to_white = [ones(negative_count, 1), ...
-        linspace(0, 1, negative_count)', linspace(0, 1, negative_count)'];
-    white_to_blue = [linspace(1, 0, positive_count)', ...
-        linspace(1, 0, positive_count)', ones(positive_count, 1)];
-    cmap = [red_to_white; white_to_blue(2:end, :)];
-elseif data_max <= 0
-    cmap = [ones(n, 1), linspace(0, 1, n)', linspace(0, 1, n)'];
-else
-    cmap = [linspace(1, 0, n)', linspace(1, 0, n)', ones(n, 1)];
-end
+function cmap = signed_redblue_map(field_value, ~)
+% The shared signed scale has a central white bin and actual-extrema labels.
+scale = mbeso_zero_centered_scale(field_value);
+cmap = scale.colormap;
 end

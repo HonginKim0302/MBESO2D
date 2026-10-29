@@ -87,6 +87,7 @@ explicit_non_design_mask = logical(explicit_non_design_mask);
 if any(explicit_non_design_mask(:) & fixed_solid_mask(:))
     error('non_design_mask must not overlap fixed_solid_mask.');
 end
+% Retained regions stay solid; their M1/M2 identity may still be reassigned.
 designMask(explicit_non_design_mask) = false;
 non_design_mask = (~designMask) & ~fixed_solid_mask;
 freeDesignMask = designMask & ~fixed_solid_mask;
@@ -128,6 +129,7 @@ if any([materials.rho1, materials.rho2, materials.rho0] < 0) || ...
 end
 
 %% Initialization
+% Internal FE units are N, mm and MPa; mass uses m, kg and m/s^2.
 elSize = resolve_element_size_from_structure(structure_width, structure_height, structure_dimension_unit, nelx, nely);
 r1 = r1_mm / elSize;
 r2 = r2_mm / elSize;
@@ -151,9 +153,11 @@ if isfield(fem.load_case_info, 'nominal_loads') && ...
         isfield(fem.load_case_info.nominal_loads, 'deck_load_node_row')
     resolved_deck_load_node_row = fem.load_case_info.nominal_loads.deck_load_node_row;
 end
+% H1 filters the stress sum for material assignment; H2 filters selection scores.
 [H1, Hs1] = prepare_filter(nelx, nely, r1);
 [H2, Hs2] = prepare_filter(nelx, nely, r2);
 
+% x is 1 or xmin; mi_map is 1 (M1), 2 (M2), or 0 (void).
 x = ones(nely, nelx);
 mi_map = ones(nely, nelx);
 x(~designMask & ~fixed_solid_mask) = xmin;
@@ -211,6 +215,7 @@ history = struct( ...
     'iteration_time_hist', [], ...
     'initial_beso_state', []);
 
+% Fixed-layout mode evaluates the supplied design without any optimization update.
 if analysis_only
     final_response = evaluate_design_response( ...
         x, penal, KE1, KE2, KE3, D1, D2, mi_map, fem, ...
@@ -312,6 +317,7 @@ if analysis_only
     return;
 end
 
+% Cache state 0; update k will use the FE response of state k-1.
 [U_all, sig1, sig2, sigvm, governing_stress_case] = FE_vectorized( ...
     x, penal, KE1, KE2, KE3, D1, D2, mi_map, fem);
 initial_compliance = element_compliance(U_all, x, penal, KE1, KE2, KE3, mi_map, fem);
@@ -336,11 +342,13 @@ while (i < max_iterations) && ((~reached_vol) || (change > tau))
     end
 
     c = current_compliance;
+    % The unfiltered principal-stress sum sets the raw selection-score branch.
     sigma_e = sig1 + sig2;
 
     [nk, eta] = update_material_utilization(materials.sigma_m1, materials.sigma_m2, sigvm, er, volfrac, sigma_e, i, tension_eta_mode, nk);
 
     eta_filtered_new = apply_filter(H2, Hs2, eta, nely, nelx);
+    % Average current and previous spatial outputs, not previous averages.
     if i == 1
         eta_filtered_history = eta_filtered_new;
     else
@@ -350,6 +358,7 @@ while (i < max_iterations) && ((~reached_vol) || (change > tau))
 
     sigma_e_filtered = apply_filter(H1, Hs1, sigma_e, nely, nelx);
 
+    % The whole-domain target includes retained solids; rank only free candidates.
     vol_next = max(vol * (1 - er), volfrac);
     [keep_mask, num_to_keep, cutoff, effective_keep_count] = select_keep_mask( ...
         eta_filtered_history, freeDesignMask, fixed_solid_mask, vol_next, even_keep_count);
@@ -361,16 +370,20 @@ while (i < max_iterations) && ((~reached_vol) || (change > tau))
     vol = vol_next;
 
     solid_mask = x > xmin;
+    % Filtered sum >= 0 assigns M1; otherwise M2, including retained solids.
+    % The baseline has no material deadband; exactly zero is assigned to M1.
     mi_map(:) = 2;
     mi_map(~solid_mask) = 0;
     mi_map(solid_mask & (sigma_e_filtered >= 0)) = 1;
     mi_map(~designMask & ~fixed_solid_mask) = 0;
 
+    % Reanalyse the new layout: both stiffness and design-dependent weight change.
     [U_all_next, sig1_next, sig2_next, sigvm_next, governing_stress_case_next] = FE_vectorized( ...
         x, penal, KE1, KE2, KE3, D1, D2, mi_map, fem);
     history_compliance = element_compliance( ...
         U_all_next, x, penal, KE1, KE2, KE3, mi_map, fem);
 
+    % Evaluate stopping and history on this updated state, not the input layout.
     current_volume_ratio = nnz(solid_mask) / (nelx * nely);
     reached_vol = current_volume_ratio <= (volfrac + volume_tolerance);
 
@@ -385,6 +398,7 @@ while (i < max_iterations) && ((~reached_vol) || (change > tau))
     history.Vk_hist(end+1, 1) = vol;
     history.solid_fraction_hist(end+1, 1) = current_volume_ratio;
     history.nk_hist(end+1, 1) = nk;
+    % Material fractions use the entire mesh as denominator.
     history.V1_hist(end+1, 1) = sum((mi_map(:) == 1) & solid_mask(:)) / numel(x);
     history.pre_compliance_hist(end+1, 1) = c;
     history.compliance_hist(end+1, 1) = history_compliance;
@@ -409,6 +423,7 @@ while (i < max_iterations) && ((~reached_vol) || (change > tau))
     end
 end
 
+% Assemble the final result from the cached analysis of the final layout.
 final_response = build_design_response_from_analysis( ...
     U_all, sig1, sig2, sigvm, governing_stress_case, ...
     x, penal, KE1, KE2, KE3, mi_map, fem, ...
@@ -421,6 +436,7 @@ else
     final_compliance = history.compliance_hist(end);
 end
 run_time_seconds = toc(run_timer);
+% Response convergence does not require an unchanged material layout.
 converged = reached_vol && (change <= tau);
 if converged
     termination_reason = 'converged';
@@ -580,13 +596,13 @@ if isempty(h) || ~isvalid(h.fig)
     set(h.fig, 'DefaultAxesFontName', 'Times New Roman', 'DefaultTextFontName', 'Times New Roman');
     h.ax = axes('Parent', h.fig);
     h.img = imagesc(h.ax, mi_map, [0 2]);
-    colormap(h.ax, [1 1 1; 1 0 0; 0 0 1]); axis(h.ax, 'equal'); axis(h.ax, 'tight'); axis(h.ax, 'off');
+    palette = mbeso_material_palette(); colormap(h.ax, palette.map); axis(h.ax, 'equal'); axis(h.ax, 'tight'); axis(h.ax, 'off');
     h.key_void = line(h.ax, NaN, NaN, 'LineStyle', 'none', 'Marker', 's', ...
-        'MarkerSize', 9, 'MarkerFaceColor', [1 1 1], 'MarkerEdgeColor', [0.3 0.3 0.3]);
+        'MarkerSize', 9, 'MarkerFaceColor', palette.void, 'MarkerEdgeColor', [0.3 0.3 0.3]);
     h.key_tension = line(h.ax, NaN, NaN, 'LineStyle', 'none', 'Marker', 's', ...
-        'MarkerSize', 9, 'MarkerFaceColor', [1 0 0], 'MarkerEdgeColor', [1 0 0]);
+        'MarkerSize', 9, 'MarkerFaceColor', palette.tensile, 'MarkerEdgeColor', palette.tensile);
     h.key_compression = line(h.ax, NaN, NaN, 'LineStyle', 'none', 'Marker', 's', ...
-        'MarkerSize', 9, 'MarkerFaceColor', [0 0 1], 'MarkerEdgeColor', [0 0 1]);
+        'MarkerSize', 9, 'MarkerFaceColor', palette.compressive, 'MarkerEdgeColor', palette.compressive);
     h.legend = legend(h.ax, ...
         [h.key_void, h.key_tension, h.key_compression], ...
         {'Void', 'Tension material (M1)', 'Compression material (M2)'}, ...
@@ -616,6 +632,7 @@ function response = build_design_response_from_analysis( ...
     U_all, sig1, sig2, sigvm, governing_stress_case, ...
     x, penal, KE1, KE2, KE3, mi_map, fem, ...
     materials, er, volfrac, tension_eta_mode, nk, H1, Hs1, H2, Hs2)
+% This eta is the stress-state selection score, not VM/assigned-material strength.
 sigma_e = sig1 + sig2;
 [~, eta] = update_material_utilization(materials.sigma_m1, materials.sigma_m2, sigvm, er, volfrac, sigma_e, 0, tension_eta_mode, nk);
 eta_filtered = apply_filter(H2, Hs2, eta, fem.nely, fem.nelx);
@@ -670,6 +687,7 @@ sigvm_all = zeros(fem.nely, fem.nelx, nLC);
 for lc = 1:nLC
     U_lc = U(:, lc);
     Ue = U_lc(fem.edofMat);
+    % Centre-point Q4 strain; this is not a nodal stress-averaging operation.
     strain = Ue * fem.B';
     stress = zeros(fem.nele, 3);
     stress(m1, :) = bsxfun(@times, strain(m1, :) * D1', xpen(m1));
@@ -685,6 +703,7 @@ for lc = 1:nLC
     sigvm_all(:, :, lc) = reshape(sqrt(sx.^2 - sx .* sy + sy.^2 + 3 * txy.^2), fem.nely, fem.nelx);
 end
 
+% With several load cases, recover each element from its largest-VM case.
 [sigvm, governing_case] = max(sigvm_all, [], 3);
 sig1 = select_load_case_field(sig1_all, governing_case);
 sig2 = select_load_case_field(sig2_all, governing_case);
@@ -709,6 +728,7 @@ m0 = ~(m1 | m2);
 sK = reshape(KE1(:) * (xpen .* m1) + KE2(:) * (xpen .* m2) + KE3(:) * (xpen .* m0), 64 * fem.nele, 1);
 K = sparse(fem.iK, fem.jK, sK, fem.ndof, fem.ndof);
 K = (K + K') / 2;
+% Rebuild self-weight from the current material map for every FE solve.
 [F, ~, ~] = current_load_vector(x, mi_map, fem);
 nLC = size(F, 2);
 U = zeros(fem.ndof, nLC);
@@ -731,6 +751,7 @@ rho(solid & (mi_map(:) == 1)) = fem.rho1;
 rho(solid & (mi_map(:) == 2)) = fem.rho2;
 rho(solid & (mi_map(:) == 0)) = fem.rho0;
 
+% Each solid element contributes rho*area*thickness*g, shared by its four nodes.
 element_mass = rho * fem.element_area_m2 * fem.out_of_plane_thickness_m;
 element_weight = fem.gravity_load_sign * element_mass * fem.gravity;
 vertical_dofs = fem.edofMat(:, [2 4 6 8]);
@@ -742,6 +763,7 @@ total_mass_kg = sum(element_mass);
 end
 
 function compliance = element_compliance(U, x, penal, KE1, KE2, KE3, mi_map, fem)
+% Reported C is strain energy (0.5*F*U); multiple cases contribute additively.
 ce = element_energy(U, KE1, KE2, KE3, mi_map, fem);
 compliance = 0.5 * sum((x(:).^penal) .* ce);
 end
@@ -773,6 +795,7 @@ end
 
 function [keep_mask, num_to_keep, cutoff, effective_keep_count] = select_keep_mask(eta_history, freeDesignMask, fixed_solid_mask, vol_next, even_keep_count)
 total_elements = numel(eta_history);
+% Subtract retained solids from the floored whole-domain target.
 num_to_keep = floor(vol_next * total_elements);
 num_fixed = nnz(fixed_solid_mask);
 num_free_to_keep = max(0, min(num_to_keep - num_fixed, nnz(freeDesignMask)));
@@ -793,6 +816,7 @@ end
 effective_keep_count = num_fixed + free_keep_count;
 
 if free_keep_count > 0
+    % Tied scores retain the input order of eligible element indices.
     [eta_sorted, sort_idx] = sort(eta_vec, 'descend');
     keep_vec = false(total_free, 1);
     keep_vec(sort_idx(1:free_keep_count)) = true;
@@ -926,15 +950,18 @@ if isempty(deck_line_load_N_per_m)
 end
 
 span_m = nelx * elSize_m;
+% Both deck distributions preserve q*L; their endpoint nodal forces differ.
 total_external_load_N = deck_load_sign * deck_line_load_N_per_m * span_m;
 switch deck_load_distribution
     case 'consistent'
+        % Adjacent edge contributions sum: endpoints q*h/2, interior nodes q*h.
         deck_node_load = deck_load_sign * deck_line_load_N_per_m * elSize_m * ones(1, nelx + 1);
         deck_node_load([1 end]) = 0.5 * deck_node_load([1 end]);
         description = sprintf( ...
             'consistent nodal loads for q = %.12g N/m over %.12g m.', ...
             deck_line_load_N_per_m, span_m);
     case 'equal_nodes'
+        % Spread the same total q*L equally over all deck nodes.
         deck_node_load = (total_external_load_N / (nelx + 1)) * ones(1, nelx + 1);
         description = sprintf( ...
             'equal nodal loads at %d nodes for q = %.12g N/m over %.12g m.', ...
@@ -977,6 +1004,7 @@ Hs = sum(H, 2);
 end
 
 function filtered = apply_filter(H, Hs, field, nely, nelx)
+% Divide by each row sum so a constant field remains constant at boundaries.
 filtered = reshape(H * field(:) ./ max(Hs, 1e-6), nely, nelx);
 end
 
@@ -997,6 +1025,7 @@ KE = E/(1-nu^2) * [ ...
 end
 
 function B = B0()
+% Centre-point strain-displacement matrix for a unit square Q4 element.
 B = 1/2 * [ ...
     -1  0  1  0  1  0 -1  0
      0 -1  0 -1  0  1  0  1
@@ -1013,13 +1042,16 @@ sigma_m2 = max(sigma_m2, 1e-6);
 er = min(max(er, 1e-3), 0.999);
 tension_eta_mode = lower(char(tension_eta_mode));
 
+% Advance n_k only during an update; final response evaluation passes iteration=0.
 if iteration > 0
     target_ratio = abs(sigma_m1) / abs(sigma_m2);
     value = log(volfrac) / log(1 - er);
+    % Grow geometrically towards the allowable-stress ratio, with an upper cap.
     nk = nk * (target_ratio)^(1 / value);
     nk = min(nk, target_ratio);
 end
 
+% Stress sign chooses the score denominator, independently of assigned material.
 eta = sigvm / sigma_m2;
 tension_mask = sigma_e >= 0;
 if any(tension_mask(:))

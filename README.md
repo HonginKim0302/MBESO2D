@@ -9,17 +9,28 @@ This repository accompanies the manuscript:
 
 > MBESO2D: An open MATLAB implementation of stress-state-based multi-material BESO
 
+The current revised manuscript lists Hongin Kim, Jaehee Choi, Minsoo Sung and
+Donghyuk Jung. See [AUTHORS.md](AUTHORS.md) for manuscript affiliations and
+the separately recorded software contributor credits.
+
 The implementation is organized for a reproducible SoftwareX-style release: compact MATLAB solvers are kept in `src/`, manuscript examples in `examples/`, plotting/report utilities in `visualization/`, and documentation in `docs/`.
 
 ## Status
 
 - Software name: `MBESO2D`
 - Version: `1.0.0`
+- Latest formal release: `v1.0.0`; `main` includes the dated manuscript reproducibility update in [CHANGELOG.md](CHANGELOG.md)
 - Repository: https://github.com/HonginKim0302/MBESO2D
 - Language: MATLAB
 - License: GNU General Public License v3.0 or later (`GPL-3.0-or-later`)
 - Third-party code: identified NewBESO/BESO79 portions retain their MIT notice;
   see `THIRD_PARTY_NOTICE.md`
+
+The existing `v1.0.0` release and tag are preserved. The additional manuscript
+reproduction files described below are provided on `main`; they are not included
+in the original `v1.0.0` release archive. Use this branch and record the exact
+commit when reproducing the revised manuscript. No new release or tag is
+created by this dated update.
 
 ## Contents
 
@@ -41,12 +52,11 @@ The implementation is organized for a reproducible SoftwareX-style release: comp
 
 ## Authors
 
-- Hongin Kim, Department of Civil, Environmental and Architectural Engineering, Korea University, Seoul 02841, Korea
-- Donghyuk Jung, School of Civil, Environmental and Architectural Engineering, Korea University, Seoul 02841, Korea
-
-Corresponding author: Donghyuk Jung (`jungd@korea.ac.kr`).
-
-Public contact: `kimhongin13@korea.ac.kr`; `jungd@korea.ac.kr`.
+The current manuscript authors are Hongin Kim, Jaehee Choi, Minsoo Sung and
+Donghyuk Jung. Corresponding manuscript authors are Minsoo Sung
+(`msung@ohio.edu`) and Donghyuk Jung (`jungd@korea.ac.kr`). Software support:
+`kimhongin13@korea.ac.kr`. Full affiliations and existing software credits are
+listed in [AUTHORS.md](AUTHORS.md).
 
 ## Main Features
 
@@ -59,11 +69,14 @@ Public contact: `kimhongin13@korea.ac.kr`; `jungd@korea.ac.kr`.
 - Plotting utilities for BESO histories, stress fields, and displacement
 - Text run reports with MATLAB version, OS, CPU, RAM, timing, settings, response summary, and iteration log
 - Automatic `.mat` result export for `mbeso_fixed_solid` examples
+- Brief teaching comments and an [equation-to-code map](docs/equation_code_map.md)
+- Saved numerical data, MATLAB figure reproduction, and separate review-experiment reruns
 
 ## Requirements
 
 - Tested with MATLAB R2024b Update 7 on Windows 64-bit.
-- MATLAB R2019b or later is expected to be compatible; older releases have not been regression-tested.
+- The core solvers and visualization utilities are expected to support MATLAB R2019b or later; older releases have not been regression-tested.
+- The manuscript reproduction and review workflows were verified with MATLAB R2024b.
 - No additional MATLAB toolbox is required.
 - The code uses base MATLAB sparse matrices and graphics.
 
@@ -151,6 +164,13 @@ One quarter of `W_e` is assembled at each vertical nodal degree of freedom of
 the Q4 element. Thickness also multiplies the plane-stress stiffness matrix.
 The bridge examples use `t = 1 m`; the cantilever uses `t = 1 mm`.
 
+`C` is the reported strain energy `0.5*F'*U = 0.5*U'*K*U`, in N·mm.
+It is monitored for stopping; element retention uses history-averaged
+utilization scores, not a compliance gradient. Reported material utilization
+is `100*VM/sigma_m1` inside assigned M1 and `100*VM/sigma_m2` inside assigned
+M2 (250 and 50 MPa in the manuscript). This postprocessing quantity differs
+from the optimizer's stress-state-based `eta` score.
+
 ## Repository Structure
 
 ```text
@@ -179,6 +199,11 @@ MBESO2D/
     input_parameters.md
     reproducibility.md
   validation/
+    review/
+      run_review_experiments.m
+    manuscript_tables/
+      RUN_SUBMISSION_TABLES.m
+      RUN_MANUSCRIPT_TABLES.m
     figures/
       cantilever_benchmark.png
       mesh_exclusion_regions_40mm.png
@@ -195,6 +220,10 @@ MBESO2D/
     run_all_validation.m
     run_mesh_independence.m
     run_regression_checks.m
+  reproduction/
+    RUN_MANUSCRIPT_FIGURES.m
+    RUN_LEGACY_20261024_FIGURES.m
+    submission_20261029/
   tests/
     run_smoke_tests.m
   results/
@@ -277,7 +306,7 @@ fixed_solid_mask = false(nely, nelx);
 fixed_solid_mask(end, :) = true;
 
 non_design_mask = false(nely, nelx);
-non_design_mask(:, 1:4) = true;
+non_design_mask(1:end-1, 1:4) = true;
 
 options.fixed_solid_mask = fixed_solid_mask;
 options.non_design_mask = non_design_mask;
@@ -298,15 +327,17 @@ The returned `result` struct includes:
 - `result.mi_map`: final material map (`0` void, `1` material 1, `2` material 2)
 - `result.history`: iteration history
 - `result.iterations`: number of completed iterations
-- `result.compliance`: final objective function value
-- `result.response`: displacement, stress, utilization, and objective function response fields
+- `result.compliance`: final strain energy, used as a response/stopping metric
+- `result.response`: displacement, stress, selection-score, and strain-energy fields
 - `result.materials`: material properties used in the run
 - `result.settings`: resolved solver settings and masks
 - `result.report_file`: text report path when a report is written
 - `result.result_file`: saved `.mat` file path when result export is enabled
 
-The raw signed-utilization contour uses the unfiltered principal-stress-sum
-sign. Material reassignment uses the separately filtered stress-state field.
+Material-utilization contours use the actual assigned material's allowable
+stress and display positive M1 and negative M2 values. The sign is a material
+identifier. The internal selection score still uses the unfiltered stress
+sum; material reassignment uses the separately filtered stress sum.
 
 ## Outputs and Visualization
 
@@ -319,10 +350,18 @@ mbeso_plot_stress_contours(result);
 mbeso_plot_displacement(result);
 ```
 
-White denotes void, red denotes tension material M1, and blue denotes
-compression material M2. Stress fields are element-wise and unsmoothed. The
-unfiltered signed material-utilization plot uses the principal-stress-sum sign,
-whereas material reassignment uses the filtered stress-state field.
+All generated material layouts, assignment strips and material legends use
+**M1 tensile = blue, M2 compressive = red, void = white**. This includes the
+live solver figures, example outputs, mesh-consistency layouts and manuscript
+Fig. 6(b). The shared definition is `src/mbeso_material_palette.m`.
+Preserved original manuscript EMFs may use earlier or conflicting conventions;
+they are historical artwork, not the palette specification. A plotting palette
+never changes `mi_map`. Stress fields are element-wise and unsmoothed; a
+von Mises stress colormap represents stress magnitude, not material identity.
+
+Signed-contour colorbars keep zero at the centre and the actual unequal
+negative/positive extrema at the two ends. Each half uses its own linear
+display scale; the underlying values and extrema are not rescaled.
 
 When enabled, reports and MAT files are written under `results/`; their actual
 paths are returned in `result.report_file` and `result.result_file`. Generated
@@ -330,14 +369,54 @@ outputs are ignored by Git.
 
 ## Validation and Reproducibility
 
-For manuscript reproduction:
+To regenerate the numerical graphs and tables associated with the submitted
+revision checked on 29 October 2026, run from the repository root:
+
+```matlab
+run('reproduction/RUN_MANUSCRIPT_FIGURES.m')  % submitted Figs. 6 and 7
+addpath(fullfile(pwd, 'validation', 'manuscript_tables'))
+RUN_SUBMISSION_TABLES;                     % submitted Tables 8 and 9
+```
+
+These entry points reuse numerical records; they do not rerun optimizations.
+Eight numerical graphs, with separate inset exports, are written under
+`reproduction/submission_20261029/outputs/` as editable FIG, PNG, PDF and
+Windows EMF files. Figure 6(b) combines material-state and location artwork;
+an optional native reconstruction is available in the panel guide.
+Figure 7 fractions and transitions cover updates 1–214, including the first
+update from the initial state. Response curves in Figures 6(a) and 7(c)
+retain states 0–214. State 0 also defines the first transition. Table 8 is the Abaqus comparison; Table 9 is the baseline
+plus 16 one-factor variants at their own stopping points.
+
+The separate [`run_review_experiments`](validation/review/run_review_experiments.m)
+entry point reruns the declared review experiments. Its modes and prerequisites
+are described in [docs/reproducibility.md](docs/reproducibility.md).
+See [the panel and data guide](reproduction/README.md) for the current mapping
+and saved-data/fresh-data distinction. The [29 October alignment record](docs/submission_alignment_20261029.md)
+and [submitted figure gallery](docs/assets/manuscript_20261029/README.md) document
+the final numbering and source composition. The 23 October numerical plots remain
+available through `reproduction/RUN_LEGACY_20261024_FIGURES.m` under their
+earlier numbering and transition-count convention.
+
+The review evidence checks implementation, responses and observed iteration
+behaviour. It does not establish exact reproduction of Li and Xie's results:
+
+- The bridge reference-compliance discrepancy remains unresolved.
+- Three of the 16 one-factor variants reached the 1,000-update cap.
+- Deadband effects on material switching are nonmonotonic; a larger band can
+  change the layout rather than simply remove noise.
+- Satisfying the analysis termination criterion does not imply a stationary
+  layout. The separate 11
+  intermediate-FE criterion exceedances remain recorded with their scope.
+
+For a release snapshot:
 
 1. Record MATLAB version, operating system, CPU, RAM, and run time from the generated report.
 2. Keep the exact example scripts used for manuscript figures.
 3. Run `validation/run_regression_checks.m` and `tests/run_smoke_tests.m` before tagging a release.
 4. Compare the numerical summaries against the CSV files in `validation/`.
 5. Review the third-party attribution.
-6. Create a fixed GitHub release tag.
+6. Create a new fixed GitHub release tag after reviewing the local changes.
 7. Archive the release and add the DOI to `CITATION.cff` when available.
 
 The quantitative tables, interpretation notes, and rerun entry points are in

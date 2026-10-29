@@ -1,0 +1,3 @@
+﻿case_id,case_label,iteration,external_MN,selfweight_MN,reaction_MN,reaction_minus_load_N
+bridge_3a,III(a),95,16,85.223393999999999,101.223393998923,-0.0010769963264465332
+bridge_3b,III(b),93,16,90.971073000000004,106.97107299986368,-0.00013631582260131836

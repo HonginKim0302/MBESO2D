@@ -1,0 +1,4 @@
+example,iterations,compliance_N_mm,m1_elements,m2_elements,m1_fraction,max_centroidal_vm_MPa,assigned_M1_max_utilization_percent,assigned_M2_max_utilization_percent,display_M2_signed_extreme_percent,source
+run_cantilever,214,574.7836060435234,549,1851,0.0915,128.9075051641605,51.5630020656642,59.78504837056842,-59.78504837056842,full_solid_domain_assigned_material_fields_review_archive
+run_case_3a,95,2552153826.197421,1884,8356,0.07359375,136.99248629439643,21.596183104648333,273.98497258879286,-273.98497258879286,full_solid_domain_assigned_material_fields_review_archive
+run_case_3b,93,1675156216.1576338,2318,7922,0.090546875,137.41434272945014,54.965737091780056,33.674359105114156,-33.674359105114156,full_solid_domain_assigned_material_fields_review_archive

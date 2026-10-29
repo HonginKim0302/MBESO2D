@@ -55,5 +55,6 @@ assert(abs(fixed_analysis.compliance - fixed.compliance) <= ...
     1e-12 * max(1, abs(fixed.compliance)));
 assert(all(isfinite(fixed_analysis.response.U)));
 
+test_material_palette();
 fprintf('MBESO2D smoke tests passed.\n');
 end

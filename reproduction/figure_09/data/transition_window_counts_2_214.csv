@@ -1,0 +1,6 @@
+run_id,epsilon_MPa,TC_updates_2_214,SV_updates_2_214
+"cantilever_eps_0",0,3286,5140
+"cantilever_eps_0p005",0.0050000000000000001,4170,5332
+"cantilever_eps_0p05",0.050000000000000003,3342,5300
+"cantilever_eps_0p5",0.5,2433,4940
+"cantilever_eps_5",5,2826,5078

@@ -8,6 +8,7 @@ function fig = mbeso_plot_history(result)
 % The input result is the structure returned by mbeso.
 
 history = result.history;
+palette = mbeso_material_palette();
 iters = (1:numel(history.compliance_hist)).';
 
 fig = figure('Color', 'w', 'Name', 'MBESO convergence history', 'NumberTitle', 'off');
@@ -22,7 +23,7 @@ ylabel(ax1, 'Volume ratio', 'FontName', 'Times New Roman');
 title(ax1, 'Solid volume', 'FontName', 'Times New Roman', 'FontWeight', 'normal');
 
 ax2 = nexttile;
-plot(ax2, iters, history.V1_hist, '-ob', 'LineWidth', 1.2, 'MarkerSize', 4);
+plot(ax2, iters, history.V1_hist, '-o', 'Color', palette.tensile, 'LineWidth', 1.2, 'MarkerSize', 4);
 grid(ax2, 'on');
 xlabel(ax2, 'Iteration', 'FontName', 'Times New Roman');
 ylabel(ax2, 'Material 1 ratio', 'FontName', 'Times New Roman');

@@ -1,0 +1,19 @@
+{
+  "checked_on": "2026-10-29",
+  "sources": [
+    {
+      "source_name": "SOFTX-D-26-01131_Manuscript_R1.docx",
+      "sha256": "33fb916d0fec9049f5fd5fd874fd03bc66c9e9503b5d031bf77d29049e1f86ca"
+    },
+    {
+      "source_name": "SOFTX-D-26-01131_Authors_Response_R1.docx",
+      "sha256": "9077b6df22b0e39606abf75ac7ee2d68deb8da712afe0828331accfa6f4eba6e"
+    },
+    {
+      "source_name": "Figures.pptx",
+      "bytes": 1315265,
+      "sha256": "7c8920727bc83bee1e45525b0511256d23202704360eb2b8485c0c5054f72c97"
+    }
+  ],
+  "note": "Manuscript and response files identify the reviewed submission; they are not redistributed here. The submitted PowerPoint is included unchanged."
+}

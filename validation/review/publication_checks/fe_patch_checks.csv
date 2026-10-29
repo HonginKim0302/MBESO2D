@@ -1,0 +1,8 @@
+check,absolute_error,tolerance,passed
+"affine_center_strain",1.5720931501039814e-18,9.9999999999999998e-13,1
+"affine_center_stress",5.9330318435968366e-13,1e-08,1
+"affine_gauss_stress",2.2737367544323206e-13,1e-08,1
+"analytic_strain_energy",3.1974423109204508e-14,1e-08,1
+"analytic_edge_tractions",9.4360075308941305e-12,9.9999999999999995e-08,1
+"rigid_modes",2.5465851649641991e-10,9.9999999999999995e-08,1
+"stiffness_symmetry",4.7293724492192268e-11,1e-08,1

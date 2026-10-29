@@ -1,0 +1,6 @@
+quantity,mbeso2d_value,li_xie_value,unit,absolute_difference,relative_difference_percent,comparison_scope
+tensile_material_fraction,9.15,7.20,percent_of_total_domain,1.95,27.0833,percentage_point_difference_and_relative_difference
+compliance,574.78,614.16,N_mm,39.38,6.4120,indicative_because_reference_objective_details_are_incomplete
+maximum_von_mises_stress,128.91,53.32,MPa,75.59,141.7667,full_domain_element_centroidal_response
+maximum_tensile_utilization,51.56,21.33,percent,30.23,141.7253,unfiltered_signed_full_domain_response
+minimum_compressive_utilization,-66.67,-26.28,percent,40.39,153.6910,absolute_magnitude_used_for_relative_difference

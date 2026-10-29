@@ -1,0 +1,33 @@
+{
+  "endpoint_comparisons": 20,
+  "all_endpoint_comparisons_passed": true,
+  "reference": "2026.10.14_final_manuscript_audit/Table10_recomputed_17rows.csv",
+  "maximum_absolute_metric_difference": 7.105427357601002e-15,
+  "numerical_engine_unchanged": [
+    {
+      "path": "validation/review/engine/src/mbeso.m",
+      "original_sha256": "2e0a2a12fc765d3e30472eb658a51eaf78c65003e68359f6a93792670d976ada",
+      "current_sha256": "2e0a2a12fc765d3e30472eb658a51eaf78c65003e68359f6a93792670d976ada"
+    },
+    {
+      "path": "validation/review/engine/src/mbeso_fixed_solid.m",
+      "original_sha256": "3c8933e39a6f6652e458345c1709c5e4e9a859f69e3031328a7502fdd88fffd5",
+      "current_sha256": "3c8933e39a6f6652e458345c1709c5e4e9a859f69e3031328a7502fdd88fffd5"
+    },
+    {
+      "path": "validation/review/engine/src/mbeso_review_gauss_vm.m",
+      "original_sha256": "c2d7764dc89f53d6b307ea2c63299a74b4f65b814d6a8d71c5626faffb0607f5",
+      "current_sha256": "c2d7764dc89f53d6b307ea2c63299a74b4f65b814d6a8d71c5626faffb0607f5"
+    },
+    {
+      "path": "validation/review/engine/src/mbeso_review_options.m",
+      "original_sha256": "4820b562af9e20dd2d28a026b9f35df59e49461bfc6cfe62b8ce3d866e7c15d4",
+      "current_sha256": "4820b562af9e20dd2d28a026b9f35df59e49461bfc6cfe62b8ce3d866e7c15d4"
+    },
+    {
+      "path": "validation/review/engine/src/mbeso_review_update.m",
+      "original_sha256": "46894c9a93a1f2081387b670f0d6de86788ef14b356fb27f6702f1a3249346c6",
+      "current_sha256": "46894c9a93a1f2081387b670f0d6de86788ef14b356fb27f6702f1a3249346c6"
+    }
+  ]
+}

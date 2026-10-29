@@ -51,6 +51,7 @@ if ~any(designMask(:)), error('designMask must contain at least one active desig
 if ~isscalar(out_of_plane_thickness_m) || ~isfinite(out_of_plane_thickness_m) || out_of_plane_thickness_m <= 0
     error('out_of_plane_thickness_m must be a positive finite scalar.');
 end
+% Internal FE units: N, mm and MPa; convert filter radii to element units.
 elSize = resolve_element_size_from_structure(structure_width, structure_height, structure_dimension_unit, nelx, nely);
 r1 = r1_mm / elSize;
 r2 = r2_mm / elSize;
@@ -63,9 +64,11 @@ KE3 = thickness_mm * lk(materials.E2, materials.nu3);
 D1 = compute_D_matrix(materials.E1, materials.nu1);
 D2 = compute_D_matrix(materials.E2, materials.nu2);
 fem = prepare_fem(nelx, nely, elSize, bc_case, bc_load);
+% H1 filters the stress sum for material assignment; H2 filters selection scores.
 [H1, Hs1] = prepare_filter(nelx, nely, r1);
 [H2, Hs2] = prepare_filter(nelx, nely, r2);
 %% Initialization
+% x is 1 or xmin; mi_map is 1 (M1), 2 (M2), or 0 (void).
 x = ones(nely, nelx);
 mi_map = ones(nely, nelx);
 x(~designMask) = xmin;
@@ -86,15 +89,18 @@ i = 0;
 plot_handle = [];
 eta_filtered_history = eta;
 %% Optimization loop
+% Update k uses the cached FE solution of state k-1.
 while (i < max_iterations) && ...
         (force_iteration_limit || (~reached_vol) || (change > tau))
     i = i + 1;
     iteration_timer = tic;
 if i == 1, eta_filtered_old = eta; end
     c = current_compliance;
+    % The unfiltered principal-stress sum sets the raw selection-score branch.
     sigma_e = sig1 + sig2;
     [nk, eta] = update_material_utilization(materials.sigma_m1, materials.sigma_m2, sigvm, er, volfrac, sigma_e, i, tension_eta_mode, nk);
     eta_filtered_new = apply_filter(H2, Hs2, eta, nely, nelx);
+    % Average current and previous spatial outputs, not previous averages.
     if i == 1
         eta_filtered_history = eta_filtered_new;
     else
@@ -102,6 +108,7 @@ if i == 1, eta_filtered_old = eta; end
     end
     eta_filtered_old = eta_filtered_new;
     sigma_e_filtered = apply_filter(H1, Hs1, sigma_e, nely, nelx);
+    % Decrease the scheduled volume, then retain the highest averaged scores.
     vol_next = max(vol * (1 - er), volfrac);
     [keep_mask, num_to_keep, cutoff, effective_keep_count] = select_keep_mask( ...
         eta_filtered_history, designMask, vol_next, even_keep_count);
@@ -110,6 +117,8 @@ if i == 1, eta_filtered_old = eta; end
     x(~designMask) = xmin;
     vol = vol_next;
     solid_mask = x > xmin;
+    % Reassign surviving/new solids: filtered sum >= 0 gives M1; otherwise M2.
+    % The baseline has no material deadband; exactly zero is assigned to M1.
     mi_map(:) = 2;
     mi_map(~solid_mask) = 0;
     mi_map(solid_mask & (sigma_e_filtered >= 0)) = 1;
@@ -118,6 +127,7 @@ if i == 1, eta_filtered_old = eta; end
     [U_next, sig1_next, sig2_next, sigvm_next] = ...
         FE_vectorized(x, penal, KE1, KE2, KE3, D1, D2, mi_map, fem);
     history_compliance = element_compliance(U_next, x, penal, KE1, KE2, KE3, mi_map, fem);
+    % Stop using the updated response and actual solid count, not the input state.
     current_volume_ratio = nnz(solid_mask) / (nelx * nely);
     reached_vol = current_volume_ratio <= (volfrac + volume_tolerance);
     if i > 10 && ~isempty(history.compliance_hist)
@@ -130,6 +140,7 @@ if i == 1, eta_filtered_old = eta; end
     history.Vk_hist(end+1, 1) = vol;
     history.solid_fraction_hist(end+1, 1) = current_volume_ratio;
     history.nk_hist(end+1, 1) = nk;
+    % Material fractions use the entire mesh as denominator.
     history.V1_hist(end+1, 1) = sum((mi_map(:) == 1) & solid_mask(:)) / numel(x);
     history.pre_compliance_hist(end+1, 1) = c;
     history.compliance_hist(end+1, 1) = history_compliance;
@@ -157,6 +168,7 @@ else
     final_compliance = history.compliance_hist(end);
 end
 run_time_seconds = toc(run_timer);
+% Response convergence does not require an unchanged material layout.
 converged = reached_vol && (change <= tau);
 if force_iteration_limit
     termination_reason = 'fixed_iteration_limit';
@@ -225,13 +237,13 @@ if isempty(h) || ~isvalid(h.fig)
     set(h.fig, 'DefaultAxesFontName', 'Times New Roman', 'DefaultTextFontName', 'Times New Roman');
     h.ax = axes('Parent', h.fig);
     h.img = imagesc(h.ax, mi_map, [0 2]);
-    colormap(h.ax, [1 1 1; 1 0 0; 0 0 1]); axis(h.ax, 'equal'); axis(h.ax, 'tight'); axis(h.ax, 'off');
+    palette = mbeso_material_palette(); colormap(h.ax, palette.map); axis(h.ax, 'equal'); axis(h.ax, 'tight'); axis(h.ax, 'off');
     h.key_void = line(h.ax, NaN, NaN, 'LineStyle', 'none', 'Marker', 's', ...
-        'MarkerSize', 9, 'MarkerFaceColor', [1 1 1], 'MarkerEdgeColor', [0.3 0.3 0.3]);
+        'MarkerSize', 9, 'MarkerFaceColor', palette.void, 'MarkerEdgeColor', [0.3 0.3 0.3]);
     h.key_tension = line(h.ax, NaN, NaN, 'LineStyle', 'none', 'Marker', 's', ...
-        'MarkerSize', 9, 'MarkerFaceColor', [1 0 0], 'MarkerEdgeColor', [1 0 0]);
+        'MarkerSize', 9, 'MarkerFaceColor', palette.tensile, 'MarkerEdgeColor', palette.tensile);
     h.key_compression = line(h.ax, NaN, NaN, 'LineStyle', 'none', 'Marker', 's', ...
-        'MarkerSize', 9, 'MarkerFaceColor', [0 0 1], 'MarkerEdgeColor', [0 0 1]);
+        'MarkerSize', 9, 'MarkerFaceColor', palette.compressive, 'MarkerEdgeColor', palette.compressive);
     h.legend = legend(h.ax, [h.key_void, h.key_tension, h.key_compression], ...
         {'Void', 'Tension material (M1)', 'Compression material (M2)'}, ...
         'Location', 'southoutside', 'Orientation', 'horizontal', 'Box', 'off', ...
@@ -243,6 +255,7 @@ set(h.ax, 'FontName', 'Times New Roman', 'FontSize', 11);
 title(h.ax, sprintf('It:%d  Compliance:%g', i, compliance), 'FontName', 'Times New Roman', 'FontWeight', 'normal'); drawnow;
 end
 function response = build_design_response_from_analysis(U, sig1, sig2, sigvm, x, penal, KE1, KE2, KE3, mi_map, fem, materials, er, volfrac, tension_eta_mode, nk, H1, Hs1, H2, Hs2)
+% This eta is the stress-state selection score, not VM/assigned-material strength.
 sigma_e = sig1 + sig2;
 [~, eta] = update_material_utilization(materials.sigma_m1, materials.sigma_m2, sigvm, er, volfrac, sigma_e, 0, tension_eta_mode, nk);
 eta_filtered = apply_filter(H2, Hs2, eta, fem.nely, fem.nelx);
@@ -254,6 +267,7 @@ function [U, sig1, sig2, sigvm] = FE_vectorized(x, penal, KE1, KE2, KE3, D1, D2,
 U = FE_displacement(x, penal, KE1, KE2, KE3, mi_map, fem);
 % Recover element principal and von Mises stresses.
 Ue = U(fem.edofMat);
+% B is evaluated at the Q4 centre; stresses are not nodal-averaged values.
 strain = Ue * fem.B';
 xpen = x(:).^penal;
 m1 = mi_map(:) == 1;
@@ -283,6 +297,7 @@ U(fem.freedofs, :) = K(fem.freedofs, fem.freedofs) \ fem.F(fem.freedofs, :);
 U(fem.fixeddofs, :) = 0;
 end
 function compliance = element_compliance(U, x, penal, KE1, KE2, KE3, mi_map, fem)
+% Reported C is strain energy: 0.5*U*K*U = 0.5*F*U, in N*mm.
 ce = element_energy(U, KE1, KE2, KE3, mi_map, fem);
 compliance = 0.5 * sum((x(:).^penal) .* ce);
 end
@@ -298,6 +313,7 @@ ce = ce1 .* m1 + ce2 .* m2 + ce3 .* m0;
 end
 function [keep_mask, num_to_keep, cutoff, effective_keep_count] = select_keep_mask(eta_history, designMask, vol_next, even_keep_count)
 total_elements = numel(eta_history);
+% Round the whole-domain target down; only eligible design elements compete.
 num_to_keep = floor(vol_next * total_elements);
 num_to_keep = max(1, min(num_to_keep, nnz(designMask)));
 effective_keep_count = num_to_keep;
@@ -310,6 +326,7 @@ if even_keep_count && mod(effective_keep_count, 2) == 1
 end
 
 eta_vec = eta_history(designMask);
+% Tied scores retain the input order of eligible element indices.
 [eta_sorted, sort_idx] = sort(eta_vec, 'descend');
 keep_vec = false(numel(eta_vec), 1);
 keep_vec(sort_idx(1:effective_keep_count)) = true;
@@ -328,6 +345,7 @@ end
 % Q4 DOF indexing and sparse assembly adapted from BESO79 in NewBESO.
 % See THIRD_PARTY_NOTICE.md for the source mapping and preserved MIT notice.
 function fem = prepare_fem(nelx, nely, elSize, bc_case, bc_load)
+% Element IDs run down each mesh column; each node has x/y displacement DOFs.
 nodenrs = reshape(1:(nelx + 1) * (nely + 1), nely + 1, nelx + 1);
 n1 = reshape(nodenrs(1:end-1, 1:end-1), nelx * nely, 1);
 n2 = reshape(nodenrs(1:end-1, 2:end), nelx * nely, 1);
@@ -375,6 +393,7 @@ H = sparse(iH(1:index), jH(1:index), sH(1:index), nelx * nely, nelx * nely);
 Hs = sum(H, 2);
 end
 function filtered = apply_filter(H, Hs, field, nely, nelx)
+% Divide by each row sum so a constant field remains constant at boundaries.
 filtered = reshape(H * field(:) ./ max(Hs, 1e-6), nely, nelx);
 end
 % Plane-stress Q4 coefficient form adapted from BESO79 in NewBESO.
@@ -391,6 +410,7 @@ KE = E/(1-nu^2) * [ k(1) k(2) k(3) k(4) k(5) k(6) k(7) k(8)
     k(8) k(3) k(2) k(5) k(4) k(7) k(6) k(1)];
 end
 function B = B0()
+% Centre-point strain-displacement matrix for a unit square Q4 element.
 B = 1/2 * [ -1  0  1  0  1  0 -1  0
      0 -1  0 -1  0  1  0  1
     -1 -1 -1  1  1  1  1 -1];
@@ -403,12 +423,15 @@ sigma_m1 = max(sigma_m1, 1e-6);
 sigma_m2 = max(sigma_m2, 1e-6);
 er = min(max(er, 1e-3), 0.999);
 tension_eta_mode = lower(char(tension_eta_mode));
+% Advance n_k only during an update; final response evaluation passes iteration=0.
 if iteration > 0
     target_ratio = abs(sigma_m1) / abs(sigma_m2);
     value = log(volfrac) / log(1 - er);
+    % Grow geometrically towards the allowable-stress ratio, with an upper cap.
     nk = nk * (target_ratio)^(1 / value);
     nk = min(nk, target_ratio);
 end
+% Stress sign chooses the score denominator, independently of assigned material.
 eta = sigvm / sigma_m2;
 tension_mask = sigma_e >= 0;
 if any(tension_mask(:))
