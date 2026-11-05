@@ -1,11 +1,9 @@
 # Contributing
 
-Thank you for your interest in `MBESO2D`.
-
-For external contributions:
+External contributions to `MBESO2D` should follow the procedure below:
 
 1. Open an issue describing the bug, question, or proposed change.
-2. Keep numerical changes reproducible with a small example.
+2. Provide a small example that reproduces any proposed numerical change.
 3. Do not commit generated `results/` files unless they are explicitly designated as reference data.
 4. Update `validation/reference_results.csv` only for intentional numerical changes and explain the reason in `CHANGELOG.md`.
 5. Preserve copyright, SPDX, and third-party notices. Identify the source and license of any adapted code in `THIRD_PARTY_NOTICE.md`.

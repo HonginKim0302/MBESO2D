@@ -99,7 +99,7 @@ end
 clear g;
 fid=fopen(fullfile(output_dir,'Table09.md'),'w','n','UTF-8');g=onCleanup(@()fclose(fid));
 fprintf(fid,'# Table 9. One-factor endpoint sensitivity\n\n');
-fprintf(fid,'Each condition uses its own analysis-termination criterion or iteration cap. All stresses are centroidal and evaluated over all solid elements. Assigned-material utilization uses M1 = 250 MPa and M2 = 50 MPa; the M2 maximum magnitude is shown with a minus sign.\n\n');
+fprintf(fid,'Each condition is reported at its own analysis-termination point or iteration cap. All stresses are centroidal and evaluated over all solid elements. Assigned-material utilization uses M1 = 250 MPa and M2 = 50 MPa; the M2 maximum magnitude is shown with a minus sign.\n\n');
 fprintf(fid,'| Setting | C change (%%) | Peak VM (MPa) | M1 (%%) | Signed M2 (%%) | Iterations | Termination |\n|---|---:|---:|---:|---:|---:|---|\n');
 for k=1:height(table9)
     fprintf(fid,'| %s | %+.2f | %.2f | %.2f | %.2f | %d | %s |\n',table9.setting(k), ...
@@ -117,7 +117,7 @@ if ~using_archive
     status.input_mat_role='Run-ID list only; numerical fields read from fresh files';
 end
 status.fresh_input_sources=input_sources;
-status.table9_endpoint_definition='Each variant uses its first analysis-termination criterion or iteration cap; larger deadbands use first_stop, not common iteration 214.';
+status.table9_endpoint_definition='Each variant is reported at its first analysis-termination point or iteration cap; larger deadbands use first_stop, not common iteration 214.';
 fid=fopen(fullfile(output_dir,'table_generation_status.json'),'w');g=onCleanup(@()fclose(fid));
 fprintf(fid,'%s\n',jsonencode(status,'PrettyPrint',true));
 disp(table8);disp(table9);fprintf('Tables saved to %s\n',output_dir);

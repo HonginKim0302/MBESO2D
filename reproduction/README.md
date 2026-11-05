@@ -17,7 +17,8 @@ respective groups. The main entry point includes eight numerical panels and
 two zooms. Figure 6(b) is an optional native reconstruction of the recorded
 assignment table and material map; run `figure_06/Fig06_b.m` to include it.
 
-From the repository root, noninteractive export and verification are:
+To export and verify the figures without opening windows, run the following
+commands from the repository root:
 
 ```matlab
 addpath('reproduction')
@@ -28,7 +29,7 @@ verify_manuscript_figures
 
 Files are written to `outputs/` as FIG, 600-dpi PNG, vector PDF and Windows
 EMF. The CSV tables and MAT structure in `outputs/data/` contain the actual
-plotted values. `outputs/figure_manifest.csv` lists the generated artifacts.
+plotted values. `outputs/figure_manifest.csv` lists the generated files.
 The scripts use Times New Roman, a 560 × 400-pixel main canvas and a 560 ×
 300-pixel zoom canvas, with physical export size defined at 96 pixels/inch.
 PowerPoint arrows and manually arranged captions are separate composition
@@ -37,7 +38,7 @@ elements; the scripts reproduce the numerical graphs.
 `figure_06/data/figure_data.mat` stores the baseline responses and the input
 values used for updates 1–10. `figure_07/data/figure_data.mat` contains all
 material states 0–214 for the five deadband conditions and their responses.
-The data reader recomputes transition counts and layout differences from
+The data reader calculates transition counts and layout differences from
 those states. Response curves end at state 214 even where the axes extend
 to 250. A transition at update k compares states k−1 and k, including update
 1. Tensile–compressive changes require both states to be solid; solid–void
@@ -48,8 +49,9 @@ To use newly computed records, call
 baseline `initial10/cantilever/full_history.mat` and each of the five
 `zero_history/cantilever_eps_*/full_history.mat` and `state_history.csv`
 pairs. The deadbands are 0, 0.005, 0.05, 0.5 and 5 MPa. Bridge results are
-not required for these figures. The function creates a separate standalone
-bundle and never substitutes the publication inputs for missing histories.
+not required for these figures. The function creates a standalone
+bundle in a separate folder. If a required history is missing, it reports an
+error rather than substituting the supplied publication records.
 Run that bundle's `RUN_MANUSCRIPT_FIGURES.m` to plot its newly prepared data.
 
 See [the manuscript reproduction guide](../docs/manuscript_reproduction.md)

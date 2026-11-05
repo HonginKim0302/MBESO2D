@@ -14,7 +14,7 @@ authors:
     email: "jungd@korea.ac.kr"
 repository-code: "https://github.com/HonginKim0302/MBESO2D"
 url: "https://github.com/HonginKim0302/MBESO2D"
-abstract: "MBESO2D is an open MATLAB implementation of stress-state-based multi-material bi-directional evolutionary structural optimization for two-dimensional benchmark, retained-solid, and non-design-domain problems. It includes teaching comments, an equation-to-code map, numerical records, editable manuscript figures and tables, and verification experiments."
+abstract: "MBESO2D is an open MATLAB implementation of stress-state-based multi-material bi-directional evolutionary structural optimization for two-dimensional continua, including problems with retained-solid and non-design regions. The repository includes explanatory comments, an equation-to-code map, numerical records, scripts for reproducing manuscript figures and tables, and verification experiments."
 keywords:
   - "topology optimization"
   - "BESO"

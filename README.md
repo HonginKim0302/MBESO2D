@@ -3,17 +3,17 @@
 [![Version: 1.0.0](https://img.shields.io/badge/version-1.0.0-blue.svg)](#status)
 [![MATLAB: tested R2024b](https://img.shields.io/badge/MATLAB-tested%20R2024b-orange.svg)](#requirements)
 
-`MBESO2D` is a MATLAB implementation for stress-state-based multi-material bi-directional evolutionary structural optimization (MBESO). The code targets two-dimensional continuum topology optimization problems with two solid materials and void, where material assignment is updated from stress-state indicators and element utilization.
+`MBESO2D` implements stress-state-based multi-material bi-directional evolutionary structural optimization (MBESO) in MATLAB. It addresses two-dimensional continuum topology optimization with two solid materials and void. Element retention is based on utilization scores, and material assignment is based on filtered stress-state indicators.
 
 This repository accompanies the manuscript:
 
 > MBESO2D: An open MATLAB implementation of stress-state-based multi-material BESO
 
-The manuscript lists Hongin Kim, Jaehee Choi, Minsoo Sung and
-Donghyuk Jung. See [AUTHORS.md](AUTHORS.md) for manuscript affiliations and
-the software contributor credits.
+The manuscript authors are Hongin Kim, Jaehee Choi, Minsoo Sung, and
+Donghyuk Jung. See [AUTHORS.md](AUTHORS.md) for affiliations and software
+contributor credits.
 
-The implementation is organized for a reproducible SoftwareX-style release: compact MATLAB solvers are kept in `src/`, manuscript examples in `examples/`, plotting/report utilities in `visualization/`, and documentation in `docs/`.
+The repository contains compact MATLAB solvers in `src/`, manuscript examples in `examples/`, plotting and reporting utilities in `visualization/`, and documentation in `docs/`.
 
 ## Status
 
@@ -49,8 +49,8 @@ record the exact Git commit as well as the MATLAB version.
 
 ## Authors
 
-The manuscript authors are Hongin Kim, Jaehee Choi, Minsoo Sung and
-Donghyuk Jung. Corresponding manuscript authors are Minsoo Sung
+The manuscript authors are Hongin Kim, Jaehee Choi, Minsoo Sung, and
+Donghyuk Jung. The corresponding authors are Minsoo Sung
 (`msung@ohio.edu`) and Donghyuk Jung (`jungd@korea.ac.kr`). Software support:
 `kimhongin13@korea.ac.kr`. Full affiliations and software credits are
 listed in [AUTHORS.md](AUTHORS.md).
@@ -59,14 +59,14 @@ listed in [AUTHORS.md](AUTHORS.md).
 
 - Compact 2D MBESO solver in `src/mbeso.m`
 - Retained-solid and non-design-domain solver in `src/mbeso_fixed_solid.m`
-- Two-material tension/compression reassignment based on recovered stress fields
+- Reassignment of tensile and compressive materials based on recovered stress fields
 - Sparse finite-element assembly and density-filtered utilization fields
 - Optional line loads, material-dependent self-weight, and explicit plane-stress thickness
 - Optional even keep-count correction without mirror-pair enforcement
 - Plotting utilities for BESO histories, stress fields, and displacement
 - Text run reports with MATLAB version, OS, CPU, RAM, timing, settings, response summary, and iteration log
 - Automatic `.mat` result export for `mbeso_fixed_solid` examples
-- Brief teaching comments and an [equation-to-code map](docs/equation_code_map.md)
+- Concise explanatory comments and an [equation-to-code map](docs/equation_code_map.md)
 - Numerical records, editable manuscript figures and tables, and verification experiments
 
 ## Requirements
@@ -209,7 +209,7 @@ Generated files under `results/` are ignored by Git.
 | `examples/run_case_3a.m` | `mbeso_fixed_solid` | Case III(a), lower retained deck | Retained 1.5 m band at the bottom |
 | `examples/run_case_3b.m` | `mbeso_fixed_solid` | Case III(b), upper retained deck | Retained 1.5 m band at the top |
 
-The mesh/plot convention places node row 1 at the top (`y = 0 m`) and node
+The mesh and plotting convention places node row 1 at the top (`y = 0 m`) and node
 row 81 at the bottom (`y = 40 m`). Case III(a) applies equal nodal forces on
 row 78 (`y = 38.5 m`), the upper surface of the retained lower deck, with
 supports at the lower-boundary endpoints on row 81. Case III(b) applies the
@@ -283,7 +283,7 @@ The returned `result` struct includes:
 - `result.mi_map`: final material map (`0` void, `1` material 1, `2` material 2)
 - `result.history`: iteration history
 - `result.iterations`: number of completed iterations
-- `result.compliance`: final strain energy, used as a response/stopping metric
+- `result.compliance`: final strain energy, used to evaluate response convergence
 - `result.response`: displacement, stress, selection-score, and strain-energy fields
 - `result.materials`: material properties used in the run
 - `result.settings`: resolved solver settings and masks
@@ -306,15 +306,15 @@ mbeso_plot_stress_contours(result);
 mbeso_plot_displacement(result);
 ```
 
-All generated material layouts, assignment strips and material legends use
+All generated material layouts, assignment strips, and material legends use
 **M1 tensile = blue, M2 compressive = red, void = white**. This includes the
-live solver figures, example outputs, mesh-consistency layouts and manuscript
+live solver figures, example outputs, mesh-consistency layouts, and manuscript
 Fig. 6(b). The shared definition is `src/mbeso_material_palette.m`.
-The plotting palette never changes `mi_map`. Stress fields are element-wise and unsmoothed; a
+The plotting palette does not change `mi_map`. Stress fields are element-wise and unsmoothed; a
 von Mises stress colormap represents stress magnitude, not material identity.
 
-Signed-contour colorbars keep zero at the centre and the actual unequal
-negative/positive extrema at the two ends. Each half uses its own linear
+Signed-contour colorbars place zero at the center and retain the actual, unequal
+negative and positive extrema at the two ends. Each half uses its own linear
 display scale; the underlying values and extrema are not rescaled.
 
 When enabled, reports and MAT files are written under `results/`; their actual
@@ -332,7 +332,7 @@ addpath(fullfile(pwd, 'validation', 'manuscript_tables'))
 ```
 
 The figure command opens eight numerical panels and two separate zooms from
-Figures 6 and 7, and saves editable FIG, PNG, PDF and Windows EMF files in
+Figures 6 and 7, and saves editable FIG, PNG, PDF, and Windows EMF files in
 `reproduction/outputs/`. Each panel also has its own script. Figure 6(b),
 which combines material assignments and element locations, has an optional
 native MATLAB reconstruction. The table command writes Tables 8 and 9 to
@@ -340,9 +340,9 @@ native MATLAB reconstruction. The table command writes Tables 8 and 9 to
 they do not rerun optimization or Abaqus.
 
 - [Figure and table guide](docs/manuscript_reproduction.md): panel meanings,
-  individual scripts, data windows and outputs.
-- [Reproduction workflow](docs/reproducibility.md): fresh calculations,
-  verification scope and computational environment.
+  individual scripts, iteration ranges, and outputs.
+- [Reproduction workflow](docs/reproducibility.md): new calculations,
+  input requirements, and the computational environment.
 - [Figure sources and previews](docs/assets/figures/README.md): manuscript
   composition and editable source artwork.
 - [Validation summary](validation/VALIDATION_SUMMARY.md): benchmark values
@@ -355,9 +355,10 @@ addpath(fullfile(pwd, 'validation', 'experiments'))
 run_verification_experiments('smoke');
 ```
 
-The verification evidence addresses the implemented calculations and the
-observed iteration behaviour. The bridge reference-compliance discrepancy
-and 11 intermediate-FE criterion exceedances remain limitations. Three
+The verification results document the implemented calculations and the
+observed behavior during iteration. The discrepancy between the bridge compliance
+values and the reference results remains unresolved, as do the 11 intermediate
+FE comparisons that exceed the specified tolerances. Three
 sensitivity conditions reach the 1,000-update cap, and deadband effects are
 nonmonotonic. Analysis termination does not imply a stationary material layout.
 
@@ -378,9 +379,10 @@ response extrema.
 
 ## Citation
 
-Citation metadata for the software and its principal methodology references is
-provided in `CITATION.cff`. After an archived release is created, its DOI and
-the final publication metadata can be added without changing the source code.
+Use `CITATION.cff` for the software citation and principal methodology references.
+When reporting results obtained from this repository, identify the software
+version and exact Git commit so that readers can retrieve the source used in
+the calculation.
 
 ## Method and Code Provenance
 

@@ -1,7 +1,7 @@
 # Manuscript equation-to-code correspondence
 
-Table 3 relates the baseline calculations to `src/mbeso.m`. Function and
-variable names provide anchors in addition to the source line ranges.
+Table 3 maps the baseline calculations to `src/mbeso.m`. Function and
+variable names identify the relevant code in addition to the source line ranges.
 
 | Calculation and equation | Function or code variable | Source lines |
 | --- | --- | --- |
@@ -16,6 +16,6 @@ Source SHA-256: `a267e9fa910989556375611d7e7c387bcac5425faf880cd540ff0ecc35a4533
 
 The hash identifies the source snapshot to which these ranges apply.
 The corresponding machine-readable map is [equation_code_map.csv](equation_code_map.csv).
-If the source is edited, verify both the ranges and the hash before using
-them in a manuscript. Experimental variants and their instrumentation are
+After editing the source, verify both the line ranges and the hash before
+citing them in a manuscript. Experimental variants and their instrumentation are
 documented in `validation/experiments/`.

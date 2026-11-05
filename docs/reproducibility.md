@@ -4,23 +4,24 @@
 
 Open MATLAB in the repository root and run `setup_mbeso_path`. The code uses
 base MATLAB. Verification has been performed in MATLAB R2024b Update 7 on
-Windows 64-bit. The core solvers are expected to support R2019b or later;
-this is not a claim that the complete figure and experiment workflows have
-been executed in every supported release. Native R2023a execution has not
-been verified.
+Windows 64-bit. The core solvers are expected to support R2019b or later.
+The complete figure and experiment workflows have not been tested in every
+release in that range. Execution in R2023a has not been verified.
 
-Record the Git commit, MATLAB version, operating system, processor, RAM and
-run time with computational results. `VERSION` identifies the formal release;
-the exact commit identifies the source used for a particular calculation.
+Record the Git commit, MATLAB version, operating system, processor, RAM, and
+execution time with computational results. `VERSION` identifies the formal
+release; the exact commit identifies the source used for a particular
+calculation.
 
-## Numerical records and fresh calculations
+## Supplied records and new calculations
 
-The repository supports two distinct operations:
+Figures and tables can be generated from supplied records or from new
+calculations:
 
 1. **Reproduction from supplied records.** The commands below create editable
    figures and tables without rerunning optimization.
-2. **Fresh calculation.** The verification experiments produce FE histories
-   and endpoints that can be passed to the same figure and table workflows.
+2. **New calculations.** The verification experiments compute FE histories
+   and endpoints for use with the same figure and table workflows.
 
 ```matlab
 run('reproduction/RUN_MANUSCRIPT_FIGURES.m')
@@ -29,10 +30,10 @@ addpath(fullfile(pwd, 'validation', 'manuscript_tables'))
 ```
 
 See [manuscript_reproduction.md](manuscript_reproduction.md) for panel scripts,
-output formats, iteration definitions and the distinction between numerical
+output formats, iteration definitions, and the distinction between numerical
 graphs and manually composed figure artwork. The compact input records are
 stored beside the figure scripts and in `validation/manuscript_tables/`.
-Generated output belongs in `results/` or `reproduction/outputs/`, not among
+Save generated output in `results/` or `reproduction/outputs/`, not among
 the source records.
 
 ## Verification experiments
@@ -43,8 +44,9 @@ run_verification_experiments('smoke');
 ```
 
 `run_verification_experiments(mode, outputRoot)` accepts an explicit output
-folder. The F5 entry point `validation/experiments/RUN_VERIFICATION.m` runs
-the smoke checks; `RUN_DEADBAND_SWEEP.m` runs the endpoint deadband sweep.
+folder. The script `validation/experiments/RUN_VERIFICATION.m` runs
+the smoke checks when opened and executed with F5; `RUN_DEADBAND_SWEEP.m`
+runs the endpoint deadband sweep.
 
 | Mode | Work performed |
 | --- | --- |
@@ -84,10 +86,11 @@ addpath(fullfile(repoRoot, 'validation', 'manuscript_tables'))
 The figure preparation requires the cantilever initial-ten-update record and
 the five complete deadband histories at 0, 0.005, 0.05, 0.5 and 5 MPa. It
 derives fractions and transitions from those records and fails if required
-fresh records are missing. Fresh Table 9 requires the seventeen cantilever
-endpoints; the three extended deadband endpoints may also be read from their
-first-termination history records. Bridge inputs are not required to prepare
-Figures 6-7 or Table 9. Table 8 remains the documentary Abaqus comparison.
+newly computed records are missing. Generating Table 9 from new calculations
+requires the seventeen cantilever endpoints; the three extended deadband
+endpoints may also be read from their first-termination history records.
+Bridge inputs are not required to prepare Figures 6-7 or Table 9. Table 8
+continues to use the reported Abaqus comparison records.
 
 ## Example conditions
 
@@ -114,18 +117,18 @@ for support indices, retained regions and boundary-condition diagrams.
 
 Compliance is reported as strain energy, `C = 0.5*F'*U = 0.5*U'*K*U`, in
 N·mm. A change in reporting convention must be distinguished from a change
-in physical load, stiffness or thickness. The optimizer retains elements
+in physical load, stiffness, or thickness. The optimizer retains elements
 using history-averaged selection scores, not a compliance gradient.
 
-Reported utilization is evaluated inside each actually assigned material:
+Reported utilization is evaluated for the elements assigned to each material:
 `100*VM/sigma_m1` for M1 and `100*VM/sigma_m2` for M2. Their contour signs
 identify +M1 and -M2; they do not identify the local stress state. This
 quantity is distinct from the internal `eta` score. The signed colorbar has
-separate linear positive and negative halves, zero at its centre and actual
+separate linear positive and negative halves, zero at its center and actual
 unequal extrema at its endpoints. Physical values are not rescaled.
 
-Table 9 compares each run at its own termination or cap. Figure 7 compares
-all five deadbands at common states through 214; runs that terminate earlier
+Table 9 compares each run at its own analysis termination or iteration cap.
+Figure 7 compares all five deadbands at common states through 214; runs that terminate earlier
 are recorded through that common window. Transition definitions and baseline
 sum checks are given in the [figure guide](manuscript_reproduction.md).
 
@@ -136,7 +139,7 @@ updates. All sensitivity results use full solid-domain extrema.
 ## Source and release checks
 
 Before archiving a source snapshot, run the regression and smoke checks,
-verify the figure/table inputs and outputs, and record the computational
+verify the figure and table inputs and outputs, and record the computational
 environment. Keep declared MAT/CSV input records in the distribution while
 excluding temporary analysis output. Check the GPL and preserved third-party
 MIT notices. Published tags should remain immutable; cite the release DOI

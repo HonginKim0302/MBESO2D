@@ -1,13 +1,13 @@
 # Example Boundary Conditions
 
-The public package contains three primary reproducibility examples. The
-coordinates below follow the finite-element and plotting convention used in
+The repository provides three primary examples for reproducing the benchmark
+cases. The coordinates below follow the finite-element and plotting convention used in
 the scripts: node row 1 is at `y = 0`, and element row 1 is the top row. Row
 numbers and `y` increase downward in the displayed two-dimensional domain.
 
 The schematics show the continuum-level problem definitions. The numbered
 node rows and masks listed below, and ultimately the example scripts, are the
-authoritative discrete definitions. The green area labelled "Non-Design Area"
+authoritative discrete definitions. The green area labeled "Non-Design Area"
 in the bridge schematics is implemented as retained solid through
 `fixed_solid_mask`; it is not the forced-void `non_design_mask` option.
 
@@ -52,7 +52,8 @@ in the bridge schematics is implemented as retained solid through
 - Self-weight: included from the current material layout.
 
 The equal-node rule preserves the total line load but differs slightly from a
-consistent Q4 edge-load vector, which assigns half force to the two end nodes.
+consistent Q4 edge-load vector, which assigns each end node half the force
+applied to an interior node.
 Select the rule with `deck_load_distribution`.
 
 The example scripts are the authoritative definitions of mesh indices, load
@@ -62,8 +63,8 @@ in a schematic, the documented node row states its exact discrete location.
 ## Manuscript figures and tables
 
 The [manuscript reproduction guide](manuscript_reproduction.md) lists the
-Figure 6-7 scripts and Table 8-9 generators. They use supplied numerical
-records. Fresh calculation modes are documented in
+Figure 6-7 scripts and Table 8-9 generators. They use the supplied numerical
+records. Instructions for recomputing these records are provided in
 [reproducibility.md](reproducibility.md).
 
 All material layouts, mesh-comparison layouts and assignment strips use

@@ -7,15 +7,17 @@ of the principal-stress sum. Let VM be the center-point von Mises stress:
     M2: magnitude = 100 * VM / result.materials.sigma_m2
 
 The combined contour displays +magnitude for M1 (blue), -magnitude for M2
-(red), and transparent void elements. The display sign identifies material;
-it does not identify the local tensile/compressive stress state. Maxima are
-reported as nonnegative numbers separately within each assigned material.
-An absent material has a NaN maximum. The denominator is not hard-coded.
+(red), and transparent void elements. The display sign identifies the
+assigned material; it does not identify the local tensile or compressive
+stress state. Maxima are reported as nonnegative numbers separately within
+each assigned material.
+The maximum is NaN when a material is absent. The denominator is read from
+the corresponding material property.
 
 mbeso_assigned_material_utilization(result) is the common reporting helper.
 mbeso_plot_stress_contours(result) and mbeso_write_run_report(result,...)
 use this definition. The examples run_cantilever, run_case_3a and run_case_3b
-already call the contour function.
+call the contour function.
 
 Solver response.eta and eta_filtered are optimization quantities. The
 signed_eta_* fields in compute_excluded_extrema are also optimization
@@ -31,16 +33,17 @@ Mesh consistency:
     addpath visualization validation
     summary = run_mesh_independence;
 
-This reruns the 50x30, 100x60 and 200x120 cantilevers for 214 updates and
+This runs the 50x30, 100x60 and 200x120 cantilevers for 214 updates and
 writes FIG, PNG, PDF, CSV and MAT files under results/mesh_consistency.
 For already computed results, without rerunning optimization:
     [fig, table] = mbeso_plot_cantilever_mesh_utilization(mesh_results,40);
-where mesh_results is a cell array containing the three result structures.
+Here, mesh_results is a cell array containing the three result structures.
 
 Rows correspond to meshes; columns show full-domain and outside-40x40-mm
 color scales. The same actual utilization field is retained in both columns.
-The three support/load patches are excluded only from extrema/color-scale
-calculations. Their FE elements are not removed and values are not replaced.
+The three support and load patches are excluded only from extrema and
+color-scale calculations. Their FE elements are not removed and values are
+not replaced.
 Each panel has its own reported endpoints; colors across panels should be
 compared with their colorbars. The sign on a colorbar is a material label;
 the printed M1/M2 maxima and CSV maxima are nonnegative.
@@ -48,14 +51,14 @@ Use this exclusion study only for mesh consistency.
 All generated categorical material layouts, including solver iterations,
 mesh consistency and manuscript reproduction, use M1 tensile blue, M2
 compressive red and void white. Their legends and
-material-assignment strips use src/mbeso_material_palette.m as the same
-source.
+material-assignment strips use the shared definitions in
+src/mbeso_material_palette.m.
 
 Focused verification:
     addpath tests
     test_assigned_material_utilization
 This checks assigned strengths, mismatched stress signs, void and missing
-materials, contour data/color scales and text reporting. It is a
+materials, contour data, color scales, and text reporting. It is a
 postprocessing verification, not a new validation of the FE solver.
 
 For mixed local installations, add the visualization folder of the intended
@@ -66,13 +69,14 @@ The shared mbeso_zero_centered_scale helper keeps actual negative and
 positive extrema at the ends and places zero exactly halfway along the bar.
 Negative and positive halves each have a separate linear scale. For example,
 the cantilever tick labels are -59.785, -29.893, 0, +25.782, +51.563 percent.
-The bounds are NOT symmetrized to the larger absolute extremum. Consequently
+The bounds are not symmetrized to the larger absolute extremum. Consequently,
 an equal visual distance in the two halves can represent different physical
 increments; use each half's tick labels when interpreting colors.
 
 Image CData and CLim use normalized display coordinates [-1,1]. Physical
 values are retained in result fields, reports and MBESO_ElementDatatipData;
-interactive data tips display those original physical values. With a missing
-sign, that half has blank tick labels instead of invented physical extrema.
-All-zero/empty fields keep the central zero and have no nonzero tick labels.
-Unsigned VM/other magnitudes keep their original nonnegative color scales.
+interactive data tips display those original physical values. If values of
+one sign are absent, the corresponding half has blank tick labels and no
+assigned extrema. All-zero or empty fields retain the central zero and have
+no nonzero tick labels. Unsigned VM and other magnitudes retain their
+original nonnegative color scales.

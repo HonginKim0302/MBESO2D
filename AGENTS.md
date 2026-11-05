@@ -9,7 +9,7 @@ The material colors for this repository are:
 | 2 (M2) | Compressive material | Red |
 
 Use `src/mbeso_material_palette.m` as the shared source for material layouts,
-assignment strips, material legends and material-labelled curves. Keep this
+assignment strips, material legends and material-labeled curves. Keep this
 mapping consistent in examples, live solver figures, mesh-consistency plots
 and manuscript reproduction. Never swap material IDs to change plot colors.
 
