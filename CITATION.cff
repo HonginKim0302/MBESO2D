@@ -1,7 +1,9 @@
 cff-version: 1.2.0
-message: "If you use MBESO2D in your research, please cite this software release and the associated methodology references."
+message: "For the manuscript reproduction source (15 November 2026; commit 7027a5a), please cite this software archive and the associated methodology references."
 title: "MBESO2D: An open MATLAB implementation of stress-state-based multi-material BESO"
 version: "1.0.0"
+doi: "10.5281/zenodo.24244523"
+date-released: "2026-11-15"
 license: "GPL-3.0-or-later"
 authors:
   - given-names: "Hongin"

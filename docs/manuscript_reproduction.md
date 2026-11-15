@@ -3,6 +3,12 @@
 The manuscript contains Figures 1-7 and Tables 1-9. Figure and table numbers
 in this repository follow that arrangement.
 
+The source and numerical records used for manuscript reproduction are archived
+as Version 1.0.0 at
+[DOI 10.5281/zenodo.24244523](https://doi.org/10.5281/zenodo.24244523)
+(source snapshot dated 15 November 2026; commit
+`7027a5a82895f32209b2a1e212bb38d7ed5601e2`).
+
 ## Locations of the manuscript results
 
 | Item | Content | Repository source |

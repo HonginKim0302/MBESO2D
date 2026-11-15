@@ -1,6 +1,7 @@
 # MBESO2D
 
 [![Version: 1.0.0](https://img.shields.io/badge/version-1.0.0-blue.svg)](#status)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24244523.svg)](https://doi.org/10.5281/zenodo.24244523)
 [![MATLAB: tested R2024b](https://img.shields.io/badge/MATLAB-tested%20R2024b-orange.svg)](#requirements)
 
 `MBESO2D` implements stress-state-based multi-material bi-directional evolutionary structural optimization (MBESO) in MATLAB. It addresses two-dimensional continuum topology optimization with two solid materials and void. Element retention is based on utilization scores, and material assignment is based on filtered stress-state indicators.
@@ -37,11 +38,18 @@ manuscript reproduction source. The MATLAB code, numerical records, and figure
 scripts are identical to [source commit `ee6a39a`](https://github.com/HonginKim0302/MBESO2D/tree/ee6a39a00c2f3343081cc890edb5ce155158ae80);
 this revision adds release-provenance information and corrected source links.
 
+The manuscript reproduction source is archived at
+[Zenodo DOI 10.5281/zenodo.24244523](https://doi.org/10.5281/zenodo.24244523), corresponding to
+[commit `7027a5a`](https://github.com/HonginKim0302/MBESO2D/tree/7027a5a82895f32209b2a1e212bb38d7ed5601e2).
+The `v1.0.0` tag remains at this archived source snapshot; subsequent citation
+and documentation updates are maintained on `main`.
+
 The initial release of 26 August 2026 is preserved at
 [`archive/v1.0.0-20260826`](https://github.com/HonginKim0302/MBESO2D/tree/archive/v1.0.0-20260826) and at
 [Zenodo DOI 10.5281/zenodo.22109432](https://doi.org/10.5281/zenodo.22109432).
-That DOI identifies the initial release; it does not archive this revised source.
-Record the exact Git commit when citing or using the revised source. Permanent
+Both archives use software version **1.0.0**; their source dates and DOIs
+distinguish the records. The [all-versions DOI](https://doi.org/10.5281/zenodo.22109431)
+groups these records. Cite the specific archive used for the reported results. Permanent
 links for manuscript Table 3 are provided in the
 [equation-to-code map](docs/equation_code_map.md).
 
@@ -395,10 +403,16 @@ response extrema.
 
 ## Citation
 
-Use `CITATION.cff` for the software citation and principal methodology references.
-When reporting results obtained from this repository, identify the software
-version and exact Git commit so that readers can retrieve the source used in
-the calculation.
+For the manuscript reproduction source, use the following software citation:
+
+> Kim, H., and Jung, D. (2026). *MBESO2D: An open MATLAB implementation of
+> stress-state-based multi-material BESO* (Version 1.0.0; source snapshot dated
+> 15 November 2026). Zenodo. https://doi.org/10.5281/zenodo.24244523
+
+`CITATION.cff` provides this software citation and the principal methodology
+references. The archived source corresponds to commit `7027a5a82895f32209b2a1e212bb38d7ed5601e2`.
+For subsequent development versions, also identify the exact Git commit used
+in the calculation.
 
 ## Method and Code Provenance
 

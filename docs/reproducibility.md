@@ -145,6 +145,12 @@ excluding temporary analysis output. Check the GPL and preserved third-party
 MIT notices. Published tags should normally remain immutable. The exceptional
 15 November 2026 correction of `v1.0.0` is documented in the
 [README source-revision notice](../README.md#source-revision--15-november-2026).
-Cite the exact source commit used for the results. The existing Zenodo DOI
-`10.5281/zenodo.22109432` archives the initial 26 August 2026 release, not the
-revised manuscript reproduction source.
+The manuscript reproduction source is archived at
+[DOI 10.5281/zenodo.24244523](https://doi.org/10.5281/zenodo.24244523)
+as Version 1.0.0 (15 November 2026; commit `7027a5a82895f32209b2a1e212bb38d7ed5601e2`).
+The `v1.0.0` tag remains at that source snapshot. Later citation and documentation
+updates on `main` do not change the archived files.
+The initial 26 August 2026 release remains available at
+[DOI 10.5281/zenodo.22109432](https://doi.org/10.5281/zenodo.22109432).
+The [all-versions DOI](https://doi.org/10.5281/zenodo.22109431) groups the records;
+use the specific version DOI when citing the source used for a calculation.

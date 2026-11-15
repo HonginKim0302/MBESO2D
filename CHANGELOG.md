@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-11-15 — Zenodo archive citation
+
+- Added the manuscript reproduction archive DOI `10.5281/zenodo.24244523` to the
+  software citation, README, repository metadata, and reproduction guides.
+- Aligned the Table 3 source links with archived commit `7027a5a82895f32209b2a1e212bb38d7ed5601e2`.
+- Preserved version `1.0.0`, both archive records, and the source tags.
+  MATLAB code, numerical records, and figure outputs are unchanged.
+
 ## 2026-11-15 — Version 1.0.0 source-link correction
 
 - Reassigned `v1.0.0` to the manuscript reproduction source so that the code URL
