@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-11-15 — Version 1.0.0 source-link correction
+
+- Reassigned `v1.0.0` to the manuscript reproduction source so that the code URL
+  printed in the manuscript opens the reviewed implementation and reproduction
+  files. The software version remains 1.0.0.
+- Preserved the original tag target `62584e38400df776a31de9db3eb5d46ca5e4a923` as
+  `archive/v1.0.0-20260826`. Zenodo DOI `10.5281/zenodo.22109432` continues to identify that
+  initial release and does not identify the revised source.
+- Added permanent Table 3 source links and documented the tag correction in
+  the README and reproduction guide. MATLAB code and numerical records are
+  unchanged from `ee6a39a00c2f3343081cc890edb5ce155158ae80`.
+
 ## 2026-10-29 — Manuscript reproducibility update
 
 - Organized the repository around the final manuscript numbering. Figures 6

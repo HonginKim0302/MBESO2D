@@ -29,6 +29,22 @@ The repository contains compact MATLAB solvers in `src/`, manuscript examples in
 `VERSION` identifies the latest formal release. For reproducible calculations,
 record the exact Git commit as well as the MATLAB version.
 
+## Source revision — 15 November 2026
+
+The software version remains **1.0.0**. On 15 November 2026, the published
+`v1.0.0` tag was reassigned from the initial release (`62584e3`) to the
+manuscript reproduction source. The MATLAB code, numerical records, and figure
+scripts are identical to [source commit `ee6a39a`](https://github.com/HonginKim0302/MBESO2D/tree/ee6a39a00c2f3343081cc890edb5ce155158ae80);
+this revision adds release-provenance information and corrected source links.
+
+The initial release of 26 August 2026 is preserved at
+[`archive/v1.0.0-20260826`](https://github.com/HonginKim0302/MBESO2D/tree/archive/v1.0.0-20260826) and at
+[Zenodo DOI 10.5281/zenodo.22109432](https://doi.org/10.5281/zenodo.22109432).
+That DOI identifies the initial release; it does not archive this revised source.
+Record the exact Git commit when citing or using the revised source. Permanent
+links for manuscript Table 3 are provided in the
+[equation-to-code map](docs/equation_code_map.md).
+
 ## Contents
 
 - [Authors](#authors)

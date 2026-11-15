@@ -142,5 +142,9 @@ Before archiving a source snapshot, run the regression and smoke checks,
 verify the figure and table inputs and outputs, and record the computational
 environment. Keep declared MAT/CSV input records in the distribution while
 excluding temporary analysis output. Check the GPL and preserved third-party
-MIT notices. Published tags should remain immutable; cite the release DOI
-and exact commit associated with the results.
+MIT notices. Published tags should normally remain immutable. The exceptional
+15 November 2026 correction of `v1.0.0` is documented in the
+[README source-revision notice](../README.md#source-revision--15-november-2026).
+Cite the exact source commit used for the results. The existing Zenodo DOI
+`10.5281/zenodo.22109432` archives the initial 26 August 2026 release, not the
+revised manuscript reproduction source.
